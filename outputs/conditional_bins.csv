@@ -1,0 +1,4 @@
+bin,level,lower,upper,prob_now,mean_T2027,mean_shift,threshold,growth_bar,sensitivity,false_positive,youden_j,strike,p_yes_no_effect_at_strike,p_yes_paper_at_strike,condition
+cool,1.4129,-inf,1.4537,0.3369,1.3900,-5.0548,-5.5321,1.1565,0.7813,0.1554,0.6259,1.2000,0.8240,0.1993,1.45 C or lower
+central,1.4945,1.4537,1.5353,0.3261,1.4947,-5.9522,-5.8050,1.1020,0.8243,0.1324,0.6918,1.1000,0.8683,0.1764,1.46 to 1.53 C
+warm,1.5762,1.5353,inf,0.3369,1.5998,-6.8527,-6.0920,1.0446,0.8554,0.1128,0.7426,1.0000,0.8997,0.1592,1.54 C or higher

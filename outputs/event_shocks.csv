@@ -1,0 +1,6 @@
+year,status,T_noaa,T_sd,filter_expectation,shock,shock_sd,innovation,pct_rank,rank_in_fit_sample
+2023,observed,1.1700,0.0000,0.9550,0.2150,0.0000,0.2205,98.5714,2
+2024,observed,1.2500,0.0000,0.8971,0.3529,0.0000,0.2171,100.0000,1
+2025,observed,1.1200,0.0000,1.0506,0.0694,0.0000,0.0138,65.7143,25
+2026,"nowcast (9 months observed, onset analogs)",1.2148,0.0218,1.2260,-0.0113,0.0218,0.0879,50.0000,36
+2027,ENSO regression (0 months observed),1.4945,0.0970,1.2003,0.2942,0.0970,0.3156,100.0000,1

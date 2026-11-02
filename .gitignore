@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+# inputs not redistributed here (see README)
+data/external/
+data/raw/imf/
+data/raw/imf_hist/
+data/raw/berkeley/
+# written by the run and by build_site_data.py
+outputs/*.npz
+site_tab/data/
+tests/fixtures/
