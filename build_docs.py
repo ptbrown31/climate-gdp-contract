@@ -214,6 +214,8 @@ def terms(x: R) -> str:
         "",
         "- Three **conditional contracts**, one for each range of NOAA's 2027 global temperature, are proposed to list "
         f"right after NOAA publishes its **2026 annual value (expected mid-January 2027)**.",
+        "- The **plain ladder** asks the same question with no temperature condition and lists at the same time. Its "
+        "terms are in `terms/plain_ladder_terms.md`.",
         "- When NOAA publishes its **2027** annual value (expected mid-January 2028), positions in the contract whose "
         "condition was met convert to an unconditional contract at the same cost basis. Positions in the other two are "
         "refunded at cost; fees are not refunded. This follows ForecastEx's conditional contracts.",
@@ -438,7 +440,6 @@ def terms(x: R) -> str:
         "",
         "### Open questions for comment",
         f"- A low-power clause or no-decision zone for the cool condition (J {b0['youden_j']:.2f})?",
-        "- Should an unconditional contract also list from the start, alongside the three conditional ones?",
         "",
         "## Changes on 30 Oct 2026",
         "- Three conditional contracts on NOAA's 2027 value replace a single contract whose cutoff was to be computed "
@@ -938,11 +939,12 @@ def memo(x: R) -> str:
         f"   - central ({b1['condition'].replace(' C', ' °C')}), strike {b1['strike']:.1f}%/yr, J {b1['youden_j']:.2f};",
         f"   - warm ({b2['condition'].replace(' C', ' °C')}), strike {b2['strike']:.1f}%/yr, J {b2['youden_j']:.2f}.",
         "   - The matching contract converts to an unconditional one when NOAA publishes 2027; the others are refunded.",
+        "   - The plain ladder asks the same question with no temperature condition and lists at the same time "
+        "(`terms/plain_ladder_terms.md`).",
         f"6. **The test has moderate power.** Unconditionally the cutoff is {c['threshold_growth_equivalent_pp']:.2f}% a "
         f"year. The contract resolves No (the paper's outcome) {pc(c['sensitivity'])} of the time if the paper is right, "
         f"and Yes {pc(c['p_yes_no_effect'])} of the time if temperature shocks have no effect (J {c['youden_j']:.2f}, "
-        f"AUC {c['auc']:.2f}). A Yes contract would be worth about ${c['p_yes_paper']:.2f} if the paper is right and "
-        f"${c['p_yes_no_effect']:.2f} if not, so its price maps onto the credence participants give the paper.",
+        f"AUC {c['auc']:.2f}).",
         f"7. **A rule chooses the end year, {x.end}.** It is the year with the highest separation (J) among "
         "2028–2037, and the rule uses no GDP data after 2025. Separation rises while the paper's response deepens, "
         f"and falls as background-growth uncertainty accumulates and the earlier shocks recover. {runner_up(x)}",
@@ -1078,7 +1080,7 @@ def memo(x: R) -> str:
         f"- Their **effect** on {x.base}–{x.end} growth is {sg(x.ft['effect_on_M_mean'], 2)} points (90% range "
         f"{sg(x.ft['effect_on_M_q05'], 1)} to {sg(x.ft['effect_on_M_q95'], 1)}). Without them the cutoff would be "
         f"{x.ft['cutoff_without_pp']:.2f}%/yr and J {x.ft['youden_j_without']:.2f}.",
-        "- The cutoffs are fixed in advance; realised 2028–30 temperatures do not change them.",
+        f"- The cutoffs are fixed in advance; realised 2028–{x.end} temperatures do not change them.",
         "",
         "## 7. The no-effect baseline",
         "",
@@ -1111,10 +1113,6 @@ def memo(x: R) -> str:
         "The strike ladder gives P(Yes) if no effect / if the paper is right, with headline strikes in bold.",
         "",
         ladder_table(x),
-        "",
-        "A participant who puts probability p on the paper being right values a $1 Yes contract at the unconditional "
-        "cutoff at " + and_list([f"${v['yes']:.2f} for p = {k.split('=')[1]}" for k, v in x.r["prices_by_prior"].items()])
-        + ".",
         "",
         "## 10. Robustness",
         "",
@@ -1172,7 +1170,6 @@ def memo(x: R) -> str:
         *(["- Replace the stand-in spread with the IMF's historical forecast errors "
            "(`data/raw/imf_hist/WEOhistorical.xlsx`)."] if x.stand_in else []),
         f"- A low-power clause or no-decision zone for the cool condition (J {b0['youden_j']:.2f})?",
-        "- List an unconditional contract from the start as well?",
         "",
         "## 14. Reproduction and refresh",
         "",

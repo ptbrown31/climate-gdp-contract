@@ -20,7 +20,8 @@ Everything below was produced by `python -I run_analysis.py` and written by `bui
    - central (1.46 to 1.53 °C), strike 1.1%/yr, J 0.69;
    - warm (1.54 °C or higher), strike 1.0%/yr, J 0.74.
    - The matching contract converts to an unconditional one when NOAA publishes 2027; the others are refunded.
-6. **The test has moderate power.** Unconditionally the cutoff is 1.09% a year. The contract resolves No (the paper's outcome) 81% of the time if the paper is right, and Yes 87% of the time if temperature shocks have no effect (J 0.68, AUC 0.91). A Yes contract would be worth about $0.19 if the paper is right and $0.87 if not, so its price maps onto the credence participants give the paper.
+   - The plain ladder asks the same question with no temperature condition and lists at the same time (`terms/plain_ladder_terms.md`).
+6. **The test has moderate power.** Unconditionally the cutoff is 1.09% a year. The contract resolves No (the paper's outcome) 81% of the time if the paper is right, and Yes 87% of the time if temperature shocks have no effect (J 0.68, AUC 0.91).
 7. **A rule chooses the end year, 2031.** It is the year with the highest separation (J) among 2028–2037, and the rule uses no GDP data after 2025. Separation rises while the paper's response deepens, and falls as background-growth uncertainty accumulates and the earlier shocks recover. 2030 comes next (J 0.67 against 0.68).
 8. **Background growth is the biggest uncertainty.** The IMF projection puts per-capita growth at 2.26% a year over 2027–2031. Its forecasts at these horizons have run high. Since 1990 growth has come in 3.1 points below them on average over five-year windows, and below them in 27 of 31 windows. Keeping that miss, the no-effect expectation is 1.65% a year. Over five years, background growth has an sd of 2.6 points, against the paper's predicted shortfall of 5.9.
 9. **Growth is measured from 2026**, the last full year before listing, so none of the measured growth is known at listing. Starting at 2027, as in the drafts until 30 Oct, gives J 0.60.
@@ -101,7 +102,7 @@ Simulated 2028+ shocks are part of the paper's prediction, because under its res
 - After a strong El Niño, winter RONI replays the winters that followed one of 7 analog El Niños (1958, 1966, 1973, 1983, 1992, 1998, 2016). Otherwise it follows an AR(2), R_y = +0.088 −0.037 R_(y-1) −0.226 R_(y-2). Each year's shock is the ENSO regression's prediction plus a resampled residual (sd 0.108 °C, n=73, volcanic years included).
 - The **mean simulated shocks** are +0.08 °C in 2028, −0.09 °C in 2029, +0.08 °C in 2030 and +0.09 °C in 2031.
 - Their **effect** on 2026–2031 growth is −0.05 points (90% range −1.9 to +1.9). Without them the cutoff would be 1.10%/yr and J 0.69.
-- The cutoffs are fixed in advance; realised 2028–30 temperatures do not change them.
+- The cutoffs are fixed in advance; realised 2028–2031 temperatures do not change them.
 
 ## 7. The no-effect baseline
 
@@ -154,8 +155,6 @@ The strike ladder gives P(Yes) if no effect / if the paper is right, with headli
 | 1.7% | 45% / 6% | 45% / 4% | 45% / 3% |
 | 1.9% | 29% / 3% | 29% / 2% | 29% / 1% |
 | 2.1% | 18% / 2% | 18% / 1% | 18% / 1% |
-
-A participant who puts probability p on the paper being right values a $1 Yes contract at the unconditional cutoff at $0.80 for p = 0.1, $0.70 for p = 0.25, $0.53 for p = 0.5, $0.36 for p = 0.75 and $0.26 for p = 0.9.
 
 ## 10. Robustness
 
@@ -232,7 +231,6 @@ The full terms are in `CONTRACT_TERMS.md`.
 
 **Open questions**
 - A low-power clause or no-decision zone for the cool condition (J 0.63)?
-- List an unconditional contract from the start as well?
 
 ## 14. Reproduction and refresh
 

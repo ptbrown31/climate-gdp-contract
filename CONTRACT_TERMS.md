@@ -3,6 +3,7 @@
 *This is a **draft for comment**, refreshed 2026-10-31. The contracts were redesigned on 30 Oct 2026 (see "Changes on 30 Oct 2026" at the end).*
 
 - Three **conditional contracts**, one for each range of NOAA's 2027 global temperature, are proposed to list right after NOAA publishes its **2026 annual value (expected mid-January 2027)**.
+- The **plain ladder** asks the same question with no temperature condition and lists at the same time. Its terms are in `terms/plain_ladder_terms.md`.
 - When NOAA publishes its **2027** annual value (expected mid-January 2028), positions in the contract whose condition was met convert to an unconditional contract at the same cost basis. Positions in the other two are refunded at cost; fees are not refunded. This follows ForecastEx's conditional contracts.
 - Every number below is **indicative** and refreshes monthly until the terms freeze at the refresh that follows NOAA's 2026 annual value.
 
@@ -181,7 +182,6 @@ Each entry gives who would raise it, the answer, and whether the design addresse
 
 ### Open questions for comment
 - A low-power clause or no-decision zone for the cool condition (J 0.63)?
-- Should an unconditional contract also list from the start, alongside the three conditional ones?
 
 ## Changes on 30 Oct 2026
 - Three conditional contracts on NOAA's 2027 value replace a single contract whose cutoff was to be computed from the final 2027 value on 1 March 2028.
