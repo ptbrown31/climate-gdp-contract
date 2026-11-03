@@ -47,8 +47,8 @@ def test_every_conditional_threshold_has_a_plain_contract(x):
 def test_chances_are_the_runs(x, docs):
     q = B.plain_ladder(x)
     row = q[q.strike_pct_yr.round(1) == B.flagship_strike(x)].iloc[0]
-    assert f"If temperature shocks have no effect: {B.pc(row.p_yes_no_effect)} chance of Yes." in docs["flagship"]
-    assert f"If the paper is right: {B.pc(row.p_yes_paper)} chance of Yes." in docs["flagship"]
+    assert f"If temperature shocks have no effect, the chance of Yes is {B.pc(row.p_yes_no_effect)}." in docs["flagship"]
+    assert f"If the paper is right, the chance of Yes is {B.pc(row.p_yes_paper)}." in docs["flagship"]
     for b in x.bins:
         cells = [B.cond_label(b), B.pc(b["prob_now"]), f"{b['strike']:.1f}%", B.pc(b["p_yes_no_effect_at_strike"]),
                  B.pc(b["p_yes_paper_at_strike"]), f"{b['youden_j']:.2f}"]

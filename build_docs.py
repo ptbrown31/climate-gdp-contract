@@ -490,7 +490,7 @@ def plain_ladder(x: R) -> pd.DataFrame:
 
 
 def flagship_strike(x: R) -> float:
-    """The headline threshold over all 2027 outcomes: the cutoff that best separates the views, to 0.1 point."""
+    """The headline threshold over all 2027 outcomes, the cutoff that best separates the views rounded to 0.1 point."""
     return round(x.c["threshold_growth_equivalent_pp"], 1)
 
 
@@ -533,10 +533,10 @@ def gdp_fields(x: R, thr: str) -> dict[str, str]:
             f"contract resolves on the vintage current on 1 October {x.settle}, about one revision cycle later, with "
             "both years read from that one vintage. This contract is not subject to early Resolution.",
         "Underlying":
-            f"Average annual growth of world GDP per capita from {x.base} to {x.end}: 100 × ln(GDP per capita in "
-            f"{x.end} ÷ GDP per capita in {x.base}) ÷ {x.span}, rounded to two decimals. GDP per capita is the WDI "
-            "series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate "
-            f"(code WLD), available at {WDI_API} (the indicator's page, {WDI_PAGE}, shows the same series). Both "
+            f"Average annual growth of world GDP per capita from {x.base} to {x.end}, computed as 100 × ln(GDP per "
+            f"capita in {x.end} ÷ GDP per capita in {x.base}) ÷ {x.span} and rounded to two decimals. GDP per capita "
+            "is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World "
+            f"aggregate (code WLD), available at {WDI_API} (the indicator's page, {WDI_PAGE}, shows the same series). Both "
             "years come from the WDI vintage current at the Resolution "
             "Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. "
             f"The contract resolves Yes if growth is strictly greater than {thr}% a year, and No otherwise. No other "
@@ -560,8 +560,8 @@ def gdp_fields(x: R, thr: str) -> dict[str, str]:
             "each case. Two more provisions apply to this contract:\n\n" + gdp_provisions(x),
         "Expiration Time": "Same as the Resolution Time.",
         "Settlement Time":
-            "Under ForecastEx Rule 603(b)(3): at 1:00 PM CT on the day of Resolution if Resolution comes before noon "
-            "CT, otherwise at 1:00 PM CT the following day.",
+            "Under ForecastEx Rule 603(b)(3), settlement takes place at 1:00 PM CT on the day of Resolution if "
+            "Resolution comes before noon CT, and at 1:00 PM CT the following day otherwise.",
         "Trading Restrictions": restrict("the Source Agency"),
     }
 
@@ -574,9 +574,9 @@ def terms_status(x: R, what: str) -> str:
 
 
 def views_note() -> str:
-    return ("These are not prices. Each is the chance of Yes in one of two sets of 50,000 simulated worlds (common "
-            "random numbers, seed 20261017): one in which temperature shocks have no effect on GDP, and one in which "
-            "Bilal and Känzig's (2026) estimate holds. These terms never combine the two into one number.")
+    return ("Each chance comes from one of two sets of 50,000 simulated worlds (common random numbers, seed "
+            "20261017), one in which temperature shocks have no effect on GDP and one in which Bilal and Känzig's "
+            "(2026) estimate holds. These terms never combine the two into one number.")
 
 
 def paper_note(x: R) -> str:
@@ -590,10 +590,11 @@ def paper_note(x: R) -> str:
 
 def growth_note(x: R) -> str:
     s = x.sel
-    return (f"Average growth {x.base}–{x.end}, median and 80% range: with no temperature effect "
-            f"{s['growth_h0_q50']:.1f}% a year ({m(s['growth_h0_q10'])} to {m(s['growth_h0_q90'])}%); if the paper is "
-            f"right {s['growth_h1_q50']:.1f}% a year ({m(s['growth_h1_q10'])} to {m(s['growth_h1_q90'])}%). At these "
-            "rates the average log growth in the Underlying is within 0.03 points of the compound annual rate.")
+    return (f"With no temperature effect, average growth from {x.base} to {x.end} has a median of "
+            f"{s['growth_h0_q50']:.1f}% a year and an 80% range of {m(s['growth_h0_q10'])} to "
+            f"{m(s['growth_h0_q90'])}%. If the paper is right, the median is {s['growth_h1_q50']:.1f}% a year and the "
+            f"80% range is {m(s['growth_h1_q10'])} to {m(s['growth_h1_q90'])}%. At these rates the average log growth "
+            "in the Underlying is within 0.03 points of the compound annual rate.")
 
 
 def data_note(x: R) -> str:
@@ -640,14 +641,15 @@ def plain_terms(x: R) -> str:
     g, f = gdp_fields(x, "[##]"), flagship_strike(x)
     fields = [
         ("Sample Question", gdp_question(x, "[##]")),
-        ("Variables", "[##]: the growth threshold, in percent a year."),
+        ("Variables", "[##] is the growth threshold, in percent a year."),
         ("Product Code", f"{CODE} (proposed; ForecastEx assigns product codes)."),
         *[(k, g[k]) for k in ("Instructions", "Underlying", "Source Agency", "Minimum Tick")],
         ("Listing Cycle", f"One expiration, for growth from {x.base} to {x.end}, proposed to list right after NOAA "
                           f"publishes its {x.base} annual global temperature (expected mid-January {x.base + 1}), "
                           f"alongside the conditional contracts ({CODE_T}). ForecastEx lists expirations at its "
                           "discretion."),
-        ("Thresholds", f"Proposed: {thresholds(x)}. The conditional contracts ({CODE_T}) list the same thresholds, so "
+        ("Thresholds", f"The proposed thresholds are {thresholds(x)}. The conditional contracts ({CODE_T}) list the "
+                       "same thresholds, so "
                        f"every conditional position has a contract here to convert into. The {f:.1f}% contract is "
                        "the flagship, also set out in its own terms. ForecastEx lists thresholds at its discretion."),
         *[(k, g[k]) for k in TAIL],
@@ -679,9 +681,9 @@ def flagship_terms(x: R) -> str:
         ("Listing", f"Proposed to list right after NOAA publishes its {x.base} annual global temperature (expected "
                     f"mid-January {y1}), as the {thr}% contract of the {CODE} ladder, alongside the conditional "
                     f"contracts ({CODE_T})."),
-        ("Threshold", f"{thr}% a year: the growth rate that best separates the two views over all {y1} outcomes (the "
-                      f"cutoff that maximises Youden's J, {x.c['threshold_growth_equivalent_pp']:.2f}% a year), "
-                      "rounded to 0.1 point."),
+        ("Threshold", f"{thr}% a year. It is the growth rate that best separates the two views over all {y1} "
+                      f"outcomes, the cutoff that maximises Youden's J ({x.c['threshold_growth_equivalent_pp']:.2f}% a "
+                      "year), rounded to 0.1 point."),
         *[(k, g[k]) for k in TAIL],
     ]
     feed = [f"Whichever range NOAA's {y1} value falls in, that range's {thr}% conditional positions ({CODE_T}) "
@@ -692,14 +694,14 @@ def flagship_terms(x: R) -> str:
                     f"over all {y1} outcomes is {thr}%.")
     notes = [
         ("What the contract tests", [
-            paper_note(x) + f" Yes: growth beats {thr}% a year, so the temperature shocks had no large effect on world "
-            f"output. No: growth at or below {thr}% a year, as the paper predicts."]),
+            paper_note(x) + f" A Yes outcome, growth above {thr}% a year, means the temperature shocks had no large "
+            f"effect on world output. A No outcome, growth at or below {thr}% a year, is what the paper predicts."]),
         ("The two views", [
-            f"- If temperature shocks have no effect: {pc(row.p_yes_no_effect)} chance of Yes.",
-            f"- If the paper is right: {pc(row.p_yes_paper)} chance of Yes.",
+            f"- If temperature shocks have no effect, the chance of Yes is {pc(row.p_yes_no_effect)}.",
+            f"- If the paper is right, the chance of Yes is {pc(row.p_yes_paper)}.",
             "",
-            f"Youden's J is {j:.2f}: the contract resolves in line with whichever view is true {pc((1 + j) / 2)} of the "
-            f"time on average. These chances are over all {y1} outcomes. The article and the contract's page show "
+            f"Youden's J is {j:.2f}, so the contract resolves in line with whichever view is true {pc((1 + j) / 2)} of "
+            f"the time on average. These chances are over all {y1} outcomes. The article and the contract's page show "
             f"them within the central range of NOAA's {y1} value, where the {central['strike']:.1f}% threshold gives "
             f"{pc(central['p_yes_no_effect_at_strike'])} and {pc(central['p_yes_paper_at_strike'])} (J "
             f"{central['youden_j']:.2f}). {views_note()}"]),
@@ -722,9 +724,9 @@ def conditional_terms(x: R) -> str:
     offset = x.prov.get("gistemp_minus_noaa_2016_2025", 0.007)
     fields = [
         ("Sample Question", gdp_question(x, "[##]", "[range]")),
-        ("Variables", f"[range]: one of three ranges of NOAA's {y1} annual global temperature, in °C above the "
-                      f"1901–2000 average: cool, {rng_text(b0)}; central, {rng_text(b1)}; warm, {rng_text(b2)}. "
-                      "[##]: the growth threshold, in percent a year."),
+        ("Variables", f"[range] is one of three ranges of NOAA's {y1} annual global temperature, in °C above the "
+                      f"1901–2000 average (cool, {rng_text(b0)}; central, {rng_text(b1)}; warm, {rng_text(b2)}). "
+                      "[##] is the growth threshold, in percent a year."),
         ("Product Code", f"{CODE_T} (proposed; ForecastEx assigns product codes)."),
         ("Instructions", f"These are conditional contracts and work as ForecastEx's conditional contracts do. Three sets "
                          f"list together, one for each range, each with the thresholds of the plain contract ({CODE}). "
@@ -732,9 +734,11 @@ def conditional_terms(x: R) -> str:
                          f"the {CODE} contract with the same threshold, at the same cost basis; positions in the other "
                          "two ranges are refunded at cost, and fees are not refunded. Converted positions then resolve "
                          f"as {CODE} contracts. This contract is not subject to early Resolution."),
-        ("Conditioning Event", f"NOAA's {y1} annual global temperature: NOAA NCEI Climate at a Glance, global land and "
-                               f"ocean surface temperature (NOAAGlobalTemp), January–December {y1}, in °C above the "
-                               f"1901–2000 average, as published to two decimals, at {noaa_csv(y1)}. Each two-decimal "
+        ("Conditioning Event", f"NOAA's {y1} annual global temperature, from NOAA NCEI Climate at a Glance (global "
+                               "land and ocean surface temperature, NOAAGlobalTemp). The value is the "
+                               f"January–December {y1} mean in °C above the 1901–2000 average, as published to two "
+                               "decimals at "
+                               f"{noaa_csv(y1)}. Each two-decimal "
                                "value falls in exactly one range. This is the baseline of ForecastEx's Global "
                                "Temperature contract (GT); its Annual Global Temperature Threshold contract (GTTA) "
                                "states temperatures against 1850–1900 instead. For scale, NOAA's 2024 value, the "
@@ -751,7 +755,8 @@ def conditional_terms(x: R) -> str:
         ("Listing Cycle", f"One set of three ranges, proposed to list right after NOAA publishes its {x.base} annual "
                           f"global temperature (expected mid-January {y1}), alongside the plain contract ({CODE}). "
                           "ForecastEx lists expirations at its discretion."),
-        ("Thresholds", f"Proposed for each range: {thresholds(x)}, the same as {CODE}. The headline thresholds are "
+        ("Thresholds", f"The proposed thresholds for each range are {thresholds(x)}, the same as {CODE}. The headline "
+                       "thresholds are "
                        f"{b0['strike']:.1f}% (cool), {b1['strike']:.1f}% (central) and {b2['strike']:.1f}% (warm). "
                        "ForecastEx lists thresholds at its discretion."),
         ("Position Accountability", g["Position Accountability"]),
@@ -759,7 +764,7 @@ def conditional_terms(x: R) -> str:
         ("Payout Criteria", "Positions refunded at the Conversion Time receive their cost; fees are not refunded. "
                             f"Converted positions settle as {CODE} contracts. {PAYOUT}"),
         ("Incentive Coupon", g["Incentive Coupon"]),
-        ("Resolution Time", f"For converted positions, the same as {CODE}: {g['Resolution Time']}"),
+        ("Resolution Time", f"For converted positions, the {CODE} Resolution Time applies, {g['Resolution Time']}"),
         ("Changes in Resolution Time",
          "ForecastEx's standard provisions apply to the Conversion Time, with NOAA as the Source Agency, and to the "
          "Resolution Time of converted positions, with the World Bank. If the Source Agency delays the data, "

@@ -6,17 +6,17 @@
 
 **Sample Question:** If NOAA's 2027 global temperature is [range], will world GDP per capita grow by more than [##]% a year, on average, from 2026 to 2031?
 
-**Variables:** [range]: one of three ranges of NOAA's 2027 annual global temperature, in °C above the 1901–2000 average: cool, 1.45 °C or lower; central, 1.46 to 1.53 °C; warm, 1.54 °C or higher. [##]: the growth threshold, in percent a year.
+**Variables:** [range] is one of three ranges of NOAA's 2027 annual global temperature, in °C above the 1901–2000 average (cool, 1.45 °C or lower; central, 1.46 to 1.53 °C; warm, 1.54 °C or higher). [##] is the growth threshold, in percent a year.
 
 **Product Code:** WGDPCT (proposed; ForecastEx assigns product codes).
 
 **Instructions:** These are conditional contracts and work as ForecastEx's conditional contracts do. Three sets list together, one for each range, each with the thresholds of the plain contract (WGDPC). At the Conversion Time, positions in the range that contains NOAA's 2027 value convert into the WGDPC contract with the same threshold, at the same cost basis; positions in the other two ranges are refunded at cost, and fees are not refunded. Converted positions then resolve as WGDPC contracts. This contract is not subject to early Resolution.
 
-**Conditioning Event:** NOAA's 2027 annual global temperature: NOAA NCEI Climate at a Glance, global land and ocean surface temperature (NOAAGlobalTemp), January–December 2027, in °C above the 1901–2000 average, as published to two decimals, at https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series/globe/land_ocean/12/12/1850-2027/data.csv. Each two-decimal value falls in exactly one range. This is the baseline of ForecastEx's Global Temperature contract (GT); its Annual Global Temperature Threshold contract (GTTA) states temperatures against 1850–1900 instead. For scale, NOAA's 2024 value, the record so far, is 1.25 °C.
+**Conditioning Event:** NOAA's 2027 annual global temperature, from NOAA NCEI Climate at a Glance (global land and ocean surface temperature, NOAAGlobalTemp). The value is the January–December 2027 mean in °C above the 1901–2000 average, as published to two decimals at https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series/globe/land_ocean/12/12/1850-2027/data.csv. Each two-decimal value falls in exactly one range. This is the baseline of ForecastEx's Global Temperature contract (GT); its Annual Global Temperature Threshold contract (GTTA) states temperatures against 1850–1900 instead. For scale, NOAA's 2024 value, the record so far, is 1.25 °C.
 
 **Conversion Time:** 31 January 2028, 10:00 AM CT (proposed), when NOAA's 2027 value is read once and archived. If NOAA has not published it by then, Conversion waits for it. If it is still unpublished on 31 March 2028, the conditioning value is NASA GISTEMP v4's 2027 annual value (https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.csv, column J-D) minus a fixed offset of +0.007 °C (the 2016–2025 mean of GISTEMP minus NOAA), read that day.
 
-**Underlying (after Conversion):** Average annual growth of world GDP per capita from 2026 to 2031: 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5, rounded to two decimals. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI vintage current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than [##]% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
+**Underlying (after Conversion):** Average annual growth of world GDP per capita from 2026 to 2031, computed as 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5 and rounded to two decimals. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI vintage current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than [##]% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
 
 **Source Agencies:** NOAA National Centers for Environmental Information (the Conditioning Event); World Bank, World Development Indicators (the Underlying).
 
@@ -24,7 +24,7 @@
 
 **Listing Cycle:** One set of three ranges, proposed to list right after NOAA publishes its 2026 annual global temperature (expected mid-January 2027), alongside the plain contract (WGDPC). ForecastEx lists expirations at its discretion.
 
-**Thresholds:** Proposed for each range: 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.7, 1.9 and 2.1% a year, the same as WGDPC. The headline thresholds are 1.2% (cool), 1.1% (central) and 1.0% (warm). ForecastEx lists thresholds at its discretion.
+**Thresholds:** The proposed thresholds for each range are 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.7, 1.9 and 2.1% a year, the same as WGDPC. The headline thresholds are 1.2% (cool), 1.1% (central) and 1.0% (warm). ForecastEx lists thresholds at its discretion.
 
 **Position Accountability:** 250,000 contracts in any one Forecast Market (ForecastEx's standard level).
 
@@ -34,7 +34,7 @@
 
 **Incentive Coupon:** Positions earn ForecastEx's monthly incentive coupon, based on the contract's daily settlement value, at no less than the minimum rate set in ForecastEx Rule 612(c).
 
-**Resolution Time:** For converted positions, the same as WGDPC: 1 October 2033, 10:00 AM CT (proposed). The WDI series is read once at that time; the response, its lastupdated date and the growth computed from it are published with these terms.
+**Resolution Time:** For converted positions, the WGDPC Resolution Time applies, 1 October 2033, 10:00 AM CT (proposed). The WDI series is read once at that time; the response, its lastupdated date and the growth computed from it are published with these terms.
 
 **Changes in Resolution Time:** ForecastEx's standard provisions apply to the Conversion Time, with NOAA as the Source Agency, and to the Resolution Time of converted positions, with the World Bank. If the Source Agency delays the data, Conversion or Resolution waits for them; if it changes its release schedule, ForecastEx may move the Conversion Time or Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay either. ForecastEx posts a public notice in each case. For converted positions, two more provisions apply:
 
@@ -43,7 +43,7 @@
 
 **Expiration Time:** For refunded positions, the Conversion Time; for converted positions, the Resolution Time.
 
-**Settlement Time:** Under ForecastEx Rule 603(b)(3): at 1:00 PM CT on the day of Resolution if Resolution comes before noon CT, otherwise at 1:00 PM CT the following day.
+**Settlement Time:** Under ForecastEx Rule 603(b)(3), settlement takes place at 1:00 PM CT on the day of Resolution if Resolution comes before noon CT, and at 1:00 PM CT the following day otherwise.
 
 **Trading Restrictions:** Under ForecastEx Rule 509(h), no one may trade this contract who has material non-public information about it, is an employee of either Source Agency, or has any direct or indirect influence over its outcome.
 
@@ -61,7 +61,7 @@ Bilal and Känzig (2026) estimate that a 1 °C global temperature shock lowers w
 | Central: 1.46 to 1.53 °C | 33% | 1.1% | 87% | 18% | 0.69 |
 | Warm: 1.54 °C or higher | 34% | 1.0% | 90% | 16% | 0.74 |
 
-The ranges are split halfway between the 20th, 50th and 80th percentiles of the current 2027 forecast (1.41, 1.49 and 1.58 °C), so each is about one-third likely today. Within each range, the headline threshold is the growth rate that best separates the two views, rounded to 0.1 point. These are not prices. Each is the chance of Yes in one of two sets of 50,000 simulated worlds (common random numbers, seed 20261017): one in which temperature shocks have no effect on GDP, and one in which Bilal and Känzig's (2026) estimate holds. These terms never combine the two into one number.
+The ranges are split halfway between the 20th, 50th and 80th percentiles of the current 2027 forecast (1.41, 1.49 and 1.58 °C), so each is about one-third likely today. Within each range, the headline threshold is the growth rate that best separates the two views, rounded to 0.1 point. Each chance comes from one of two sets of 50,000 simulated worlds (common random numbers, seed 20261017), one in which temperature shocks have no effect on GDP and one in which Bilal and Känzig's (2026) estimate holds. These terms never combine the two into one number.
 
 For example, if NOAA's 2027 value is 1.49 °C, a central-range position at 1.1% becomes a WGDPC 1.1% position at the same cost, and cool- and warm-range positions are refunded at cost.
 

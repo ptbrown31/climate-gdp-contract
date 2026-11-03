@@ -6,13 +6,13 @@
 
 **Sample Question:** Will world GDP per capita grow by more than [##]% a year, on average, from 2026 to 2031?
 
-**Variables:** [##]: the growth threshold, in percent a year.
+**Variables:** [##] is the growth threshold, in percent a year.
 
 **Product Code:** WGDPC (proposed; ForecastEx assigns product codes).
 
 **Instructions:** The World Bank updates its World Development Indicators (WDI) several times a year. Its first estimate of world GDP per capita for 2031 usually appears in mid-2032, and revisions follow. This contract resolves on the vintage current on 1 October 2033, about one revision cycle later, with both years read from that one vintage. This contract is not subject to early Resolution.
 
-**Underlying:** Average annual growth of world GDP per capita from 2026 to 2031: 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5, rounded to two decimals. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI vintage current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than [##]% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
+**Underlying:** Average annual growth of world GDP per capita from 2026 to 2031, computed as 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5 and rounded to two decimals. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI vintage current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than [##]% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
 
 **Source Agency:** World Bank, World Development Indicators (compiled by its Development Data Group).
 
@@ -20,7 +20,7 @@
 
 **Listing Cycle:** One expiration, for growth from 2026 to 2031, proposed to list right after NOAA publishes its 2026 annual global temperature (expected mid-January 2027), alongside the conditional contracts (WGDPCT). ForecastEx lists expirations at its discretion.
 
-**Thresholds:** Proposed: 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.7, 1.9 and 2.1% a year. The conditional contracts (WGDPCT) list the same thresholds, so every conditional position has a contract here to convert into. The 1.1% contract is the flagship, also set out in its own terms. ForecastEx lists thresholds at its discretion.
+**Thresholds:** The proposed thresholds are 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.7, 1.9 and 2.1% a year. The conditional contracts (WGDPCT) list the same thresholds, so every conditional position has a contract here to convert into. The 1.1% contract is the flagship, also set out in its own terms. ForecastEx lists thresholds at its discretion.
 
 **Position Accountability:** 250,000 contracts in any one Forecast Market (ForecastEx's standard level).
 
@@ -39,7 +39,7 @@
 
 **Expiration Time:** Same as the Resolution Time.
 
-**Settlement Time:** Under ForecastEx Rule 603(b)(3): at 1:00 PM CT on the day of Resolution if Resolution comes before noon CT, otherwise at 1:00 PM CT the following day.
+**Settlement Time:** Under ForecastEx Rule 603(b)(3), settlement takes place at 1:00 PM CT on the day of Resolution if Resolution comes before noon CT, and at 1:00 PM CT the following day otherwise.
 
 **Trading Restrictions:** Under ForecastEx Rule 509(h), no one may trade this contract who has material non-public information about it, is an employee of the Source Agency, or has any direct or indirect influence over its outcome.
 
@@ -67,11 +67,11 @@ Bilal and Känzig (2026) estimate that a 1 °C global temperature shock lowers w
 | 1.9% | 29% | 2% |
 | 2.1% | 18% | 1% |
 
-The flagship's threshold is in bold. These are not prices. Each is the chance of Yes in one of two sets of 50,000 simulated worlds (common random numbers, seed 20261017): one in which temperature shocks have no effect on GDP, and one in which Bilal and Känzig's (2026) estimate holds. These terms never combine the two into one number.
+The flagship's threshold is in bold. Each chance comes from one of two sets of 50,000 simulated worlds (common random numbers, seed 20261017), one in which temperature shocks have no effect on GDP and one in which Bilal and Känzig's (2026) estimate holds. These terms never combine the two into one number.
 
 ### Growth in each world
 
-Average growth 2026–2031, median and 80% range: with no temperature effect 1.6% a year (1.0 to 2.3%); if the paper is right 0.5% a year (−0.5 to 1.4%). At these rates the average log growth in the Underlying is within 0.03 points of the compound annual rate.
+With no temperature effect, average growth from 2026 to 2031 has a median of 1.6% a year and an 80% range of 1.0 to 2.3%. If the paper is right, the median is 0.5% a year and the 80% range is −0.5 to 1.4%. At these rates the average log growth in the Underlying is within 0.03 points of the compound annual rate.
 
 ### Timeline
 
