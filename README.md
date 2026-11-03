@@ -1,50 +1,53 @@
 # A forecast contract on world GDP after the 2023–27 temperature shocks
 
-The code and data behind a proposed ForecastEx contract,
+This repository holds the code and data behind a proposed ForecastEx contract that tests Bilal and
+Känzig's estimate of what global temperature shocks do to world output
+([Quarterly Journal of Economics, 2026](https://doi.org/10.1093/qje/qjag011)). The headline contract
+asks whether world GDP per capita will grow by more than 1.1% a year, on average, from 2026 to 2031.
+The repository also holds the code behind the contract's page on
+[weather.weatherclimatehumansystems.org](https://weather.weatherclimatehumansystems.org/), which
+re-runs this model in the browser as readers change its assumptions.
 
-> Will world GDP per capita grow by more than 1.1% a year, on average, from 2026 to 2031?
-
-built to test Bilal and Känzig's estimate of what global temperature shocks do to world output
-([Quarterly Journal of Economics, 2026](https://doi.org/10.1093/qje/qjag011)), and behind the
-contract's page on [weather.weatherclimatehumansystems.org](https://weather.weatherclimatehumansystems.org/),
-which re-runs this model in the browser as readers change its assumptions.
-
-Patrick T. Brown. Draft for comment.
+Patrick T. Brown. The design is a draft for comment.
 
 ## What the code does
 
-1. **Re-estimates the paper's responses** from the authors' replication files: the local
-   projections, their wild bootstrap, the country panels (`bk_elnino/lp.py`, `irf.py`, `panel.py`).
+1. **Re-estimates the paper's responses** from the authors' replication files. This covers the local
+   projections, their wild bootstrap and the country panels (`bk_elnino/lp.py`, `irf.py`, `panel.py`).
    The time-series responses match the authors' Stata output to within 1e-6 points.
-2. **Measures temperature shocks** the paper's way, the year's temperature less what the
-   temperatures two and three years earlier predict, fitted on the paper's window (data through
-   2022), on NOAA's global record (`hamilton.py`, `temperature.py`). 2026 and 2027 carry estimates
-   until NOAA publishes their annual values.
-3. **Simulates 50,000 paths** of world GDP per person, 2026–2035, under two views: no temperature
-   effect (the IMF's October 2026 projection less its average past miss, with the spread of its
-   record of misses, `imf_baseline.py`), and the paper's estimate applied to every shock since 2015
-   and to simulated shocks after 2027 (`future_temps.py`, `analysis.py`).
-4. **Sets the terms** from information available before listing: the end year and the cutoff
-   that best separate the two views (Youden's J, `wager.py`), and three contracts conditional on
-   NOAA's 2027 value.
+2. **Measures temperature shocks** the paper's way, on NOAA's global record (`hamilton.py`,
+   `temperature.py`). A shock is the year's temperature less what the temperatures two and three
+   years earlier predict, with the filter fitted on the paper's window (data through 2022). 2026 and
+   2027 carry estimates until NOAA publishes their annual values.
+3. **Simulates 50,000 paths** of world GDP per person for 2026–2035 under two views. If temperature
+   shocks have no effect, growth follows the IMF's October 2026 projection less its average past
+   miss, with the spread of its record of misses (`imf_baseline.py`). If the paper is right, its
+   response applies to every shock since 2015 and to simulated shocks after 2027 (`future_temps.py`,
+   `analysis.py`).
+4. **Sets the terms** from information available before listing. It picks the end year and the
+   cutoff that best separate the two views (Youden's J, `wager.py`) and defines three contracts
+   conditional on NOAA's 2027 value.
 5. **Writes the page's data** (`build_site_data.py`, `build_site_article.py`). The page's model,
-   `site_tab/js/elnino-model.js`, replays the same 50,000 paths; `tests/test_site_model.py` checks
+   `site_tab/js/elnino-model.js`, replays the same 50,000 paths. `tests/test_site_model.py` checks
    it against the run, path by path, on twelve designs.
 
 `MEMO.md` explains every choice and lists the objections we expect, with answers.
-`CONTRACT_TERMS.md` states the indicative terms. `terms/` holds the three proposed listing documents,
-in the layout of ForecastEx's contract terms: the plain ladder, the conditional contracts and the
-flagship contract.
+`CONTRACT_TERMS.md` states the indicative terms. `terms/` holds the three proposed listing documents
+for the plain ladder, the conditional contracts and the flagship contract, in the layout of
+ForecastEx's contract terms.
 
-## Reproduce
+## Reproduction
 
-Python 3.10 or later with numpy, pandas, scipy, matplotlib and lxml; node for the page-model test.
+The code needs Python 3.10 or later with numpy, pandas, scipy, matplotlib and lxml. The page-model
+test also needs node.
 
-**1. The inputs this repository does not redistribute.** The authors' replication package and
-shock series, and the IMF's files:
+**1. Inputs fetched separately.** This repository does not redistribute the authors' replication
+package, their shock series or the IMF's files. Clone the authors' two repositories from GitHub.
 
     git clone https://github.com/dkaenzig/micc_replication data/external/micc_replication
     git clone https://github.com/dkaenzig/global-temperature-shocks data/external/global-temperature-shocks
+
+Download each IMF file from its source in the table into the folder shown.
 
 | File | Where it goes | Source | SHA-256 of the copy the published run used |
 |---|---|---|---|
@@ -54,16 +57,16 @@ shock series, and the IMF's files:
 
 The public-domain and CC BY series (NOAA, NASA GISTEMP, the Oceanic Niño indices, World Bank WDI)
 are in `data/raw/` as the published run downloaded them, each with its `vintage.json` (address,
-time and SHA-256); anything missing is downloaded on first use.
+time and SHA-256). Anything missing is downloaded on first use.
 
-**2. Run.**
+**2. Commands.**
 
-    python -I run_analysis.py            # on the data as committed: reproduces outputs/ (a few minutes)
-    python -I run_analysis.py --refresh  # or download every public series again first
+    python -I run_analysis.py            # reproduces outputs/ from the data as committed (a few minutes)
+    python -I run_analysis.py --refresh  # downloads every public series again, then runs
     python -I build_site_data.py         # the page's model files, in site_tab/data/elnino/
     python -I -m pytest tests -q
 
-`outputs/` holds the published run's results (`results.json` and the tables) so they can be read
+`outputs/` holds the published run's results (`results.json` and the tables), so they can be read
 without running anything. To see the page locally with the public site's styles, clone
 [the site](https://github.com/ptbrown31/weatherclimatedashboard) beside this repository and run
 `python3 -I site_tab/serve_preview.py`.
@@ -81,11 +84,12 @@ without running anything. To see the page locally with the public site's styles,
 | `bk_elnino/objections.py` | The objections we expect, with answers built from `results.json` |
 | `run_analysis.py`, `build_docs.py` | The run; `MEMO.md`, `CONTRACT_TERMS.md` and the listing terms in `terms/` from its outputs |
 | `build_site_data.py`, `build_site_article.py` | The page's model files and text |
-| `site_tab/` | The page: HTML, CSS, its model (`js/elnino-model.js`) and figures (`js/climate-gdp.js`) |
+| `site_tab/` | The page's HTML, CSS, model (`js/elnino-model.js`) and figures (`js/climate-gdp.js`) |
 | `docs/article_v2/make_figures.py` | The article's static figures |
 | `tests/` | Unit tests, the replication checks, and the page-model check |
 
 ## Licence
 
-Code: MIT (`LICENSE`). Data keep their sources' terms: NOAA and NASA, US government works; World
-Bank WDI, CC BY 4.0; the IMF's and the authors' files are not included here.
+The code is under the MIT licence (`LICENSE`). The data keep their sources' terms. NOAA and NASA
+data are US government works, World Bank WDI data are CC BY 4.0, and the IMF's and the authors'
+files are not included here.

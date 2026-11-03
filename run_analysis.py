@@ -388,12 +388,6 @@ def main(refresh: bool = False):
     cond = A.simulate(ctx, D, N_PATHS, SEED, T26=ctx.T26[0], T27=ctx.T27[0], D0_cache=cache).oc()
     res["contract_primary_conditional_on_central_temps"] = cond.as_dict()
 
-    # fair prices (Yes pays 1 if growth beats the cutoff, i.e. M > c) for a participant who puts
-    # probability p on the paper being right
-    res["prices_by_prior"] = {f"p_paper={p}": {"yes": p * (1 - oc.sensitivity) + (1 - p) * (1 - oc.false_positive),
-                                               "no": p * oc.sensitivity + (1 - p) * oc.false_positive}
-                              for p in (0.1, 0.25, 0.5, 0.75, 0.9)}
-
     # conditional contracts on NOAA's 2027 value (listed 1 Jan 2027), with strike ladders
     bins = A.conditional_bins(ctx, D, N_PATHS, SEED, D0_cache=cache)
     bins["strike"] = bins.growth_bar.round(1)
