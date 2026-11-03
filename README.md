@@ -32,7 +32,9 @@ Patrick T. Brown. Draft for comment.
    it against the run, path by path, on twelve designs.
 
 `MEMO.md` explains every choice and lists the objections we expect, with answers.
-`CONTRACT_TERMS.md` states the indicative terms.
+`CONTRACT_TERMS.md` states the indicative terms. `terms/` holds the three proposed listing documents,
+in the layout of ForecastEx's contract terms: the plain ladder, the conditional contracts and the
+flagship contract.
 
 ## Reproduce
 
@@ -77,7 +79,7 @@ without running anything. To see the page locally with the public site's styles,
 | `bk_elnino/future_temps.py` | Simulated temperature shocks after 2027 |
 | `bk_elnino/analysis.py`, `wager.py` | Every design choice in one `Design`; the simulation; the contract statistic and cutoff |
 | `bk_elnino/objections.py` | The objections we expect, with answers built from `results.json` |
-| `run_analysis.py`, `build_docs.py` | The run; `MEMO.md` and `CONTRACT_TERMS.md` from its outputs |
+| `run_analysis.py`, `build_docs.py` | The run; `MEMO.md`, `CONTRACT_TERMS.md` and the listing terms in `terms/` from its outputs |
 | `build_site_data.py`, `build_site_article.py` | The page's model files and text |
 | `site_tab/` | The page: HTML, CSS, its model (`js/elnino-model.js`) and figures (`js/climate-gdp.js`) |
 | `docs/article_v2/make_figures.py` | The article's static figures |
