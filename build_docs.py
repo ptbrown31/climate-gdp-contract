@@ -11,6 +11,7 @@ vintage).
 from __future__ import annotations
 
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -201,7 +202,7 @@ def contrib_rows(x: R) -> list[list]:
 def terms(x: R) -> str:
     c, b0, b1, b2 = x.c, x.bin("cool"), x.bin("central"), x.bin("warm")
     t24 = float(x.shocks.loc[2024, "noaa_T"])
-    offset = x.prov.get("gistemp_minus_noaa_2016_2025", 0.007)
+    lo, hi = gt_bounds(x)
     imf_years = [y for y in range(x.base + 1, 2032) if y in x.imf_g]
     stand = " " + spread_text(x)
     q_h0 = (x.sel["growth_h0_q10"], x.sel["growth_h0_q90"])
@@ -209,8 +210,9 @@ def terms(x: R) -> str:
     lines = [
         "# Draft contract specification for world GDP per capita after the 2023–27 global temperature shocks",
         "",
-        f"*This is a **draft for comment**, refreshed {x.refreshed}. The contracts were redesigned on 30 Oct 2026 (see "
-        "\"Changes on 30 Oct 2026\" at the end).*",
+        f"*This is a **draft for comment**, refreshed {x.refreshed}. The contracts were redesigned on 30 Oct 2026, and "
+        "on 4 Nov 2026 their conditioning event moved to ForecastEx's Global Temperature contract (see the changes at "
+        "the end).*",
         "",
         "- Three **conditional contracts**, one for each range of NOAA's 2027 global temperature, are proposed to list "
         f"right after NOAA publishes its **2026 annual value (expected mid-January 2027)**.",
@@ -251,8 +253,9 @@ def terms(x: R) -> str:
             ["Right after", "**Conditional contracts list.**"],
             ["~Mar 2027", "NOAA publishes the winter (DJF) El Niño strength. Market prices can move on it, and the "
                           "terms stay fixed."],
-            ["~Mid-Jan 2028", "NOAA publishes its 2027 annual value. **The matching condition converts; the other two "
-                              "are refunded at cost.**"],
+            ["~Mid-Jan 2028", f"NOAA publishes its 2027 annual value, and ForecastEx's GT 2027 contracts resolve on it "
+                              f"(listed for {gt_when(2027)}). **The matching condition converts; the other two are "
+                              "refunded at cost.**"],
             [f"Mid-{x.end + 1}", f"World Bank publishes the first {x.end} figure."],
             [f"**1 Oct {x.settle}**", "**Resolve and settle** on the WDI vintage of that date, one revision cycle after "
                                       "the first release."],
@@ -263,14 +266,16 @@ def terms(x: R) -> str:
         "Each term is open for comment until the freeze.",
         "",
         "### 1. Conditioning event",
-        "- The conditioning event is NOAA's 2027 global temperature, the January–December mean of global land and "
-        "ocean surface temperature (NOAAGlobalTemp) in NOAA NCEI Climate at a Glance. It is in °C relative to the "
-        "1901–2000 average, as published to two decimals at "
-        "`https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series/globe/land_ocean/12/12/1850-2027/data.csv`.",
-        "- It is read once on 31 January 2028 and archived.",
+        "- The conditioning event is the resolution of ForecastEx's Global Temperature contracts (GT) for 2027 at two "
+        f"thresholds, the range bounds of {lo:.2f} and {hi:.2f} °C. ForecastEx's live conditional contracts "
+        "(ZSENMFES, ZSENMUSR) use its Senate majority contract the same way.",
+        "- GT resolves on NOAA's 2027 global temperature, the January–December mean of global land and ocean surface "
+        "temperature (NOAAGlobalTemp) in NOAA's annual global climate report. It is in °C relative to the 1901–2000 "
+        f"average, as first published to two decimals ({GT_TERMS}).",
         f"- The conditions are cool ({b0['condition'].replace(' C', ' °C')}), central "
-        f"({b1['condition'].replace(' C', ' °C')}) and warm ({b2['condition'].replace(' C', ' °C')}). "
-        f"For scale, the 2024 record is {t24:.2f} °C.",
+        f"({b1['condition'].replace(' C', ' °C')}) and warm ({b2['condition'].replace(' C', ' °C')}). Cool occurs if GT "
+        f"2027 at {lo:.2f} resolves No, central if GT 2027 at {lo:.2f} resolves Yes and GT 2027 at {hi:.2f} resolves "
+        f"No, and warm if GT 2027 at {hi:.2f} resolves Yes. For scale, the 2024 record is {t24:.2f} °C.",
         "- Each boundary between ranges lies halfway between neighbouring percentiles of the current 2027 forecast. "
         f"The percentiles are the 20th, 50th and 80th ({b0['level']:.2f}, {b1['level']:.2f} and {b2['level']:.2f} "
         f"°C), so each range is about one-third likely today. The forecast is the filter's expectation for 2027 "
@@ -278,9 +283,9 @@ def terms(x: R) -> str:
         f"({sg(x.prov['s2027_regression_forecast'][0])} ± {x.prov['s2027_regression_forecast'][1]:.2f} °C), with winter "
         f"(DJF) RONI assumed ~N({x.prov['roni_djf_2027_assumption'][0]}, {x.prov['roni_djf_2027_assumption'][1]}). "
         "The ranges freeze with the other terms.",
-        f"- If NOAA has published no 2027 annual value by 31 March 2028, the **fallback** is NASA GISTEMP v4 "
-        f"(`GLB.Ts+dSST.csv`, column `J-D`) minus the fixed GISTEMP − NOAA offset, the 2016–2025 mean of "
-        f"{sg(offset, 3)} °C.",
+        f"- ForecastEx lists GT 2027 to resolve at 10:00 AM CT on {gt_when(2027)} and would list both bounds before "
+        "the conditional contracts list. If NOAA is late, the GT resolution and the conversion wait for it. No other "
+        "dataset stands in. NASA's GISTEMP takes its land and ocean data from NOAA and was delayed with it in 2019.",
         "",
         "### 2. Settlement event",
         f"- The settlement event is world GDP per capita growth from {x.base} to {x.end}, measured with World Bank WDI "
@@ -399,8 +404,8 @@ def terms(x: R) -> str:
         ladder_table(x),
         "",
         "### 10. Conversion and refunds",
-        "- When NOAA publishes its 2027 annual value, positions in the contracts whose condition was met convert to the "
-        "unconditional contract with the same question and strike, at the same cost basis.",
+        "- When the GT 2027 contracts resolve on NOAA's 2027 annual value, positions in the contracts whose condition "
+        "was met convert to the unconditional contract with the same question and strike, at the same cost basis.",
         "- Positions in the other conditions' contracts are refunded at cost; fees are not refunded.",
         "- More strikes may be listed after conversion. The cutoff for the realised 2026 and 2027 values comes from "
         "`python -I run_analysis.py --lock <T2026> <T2027>` on the archived data (`outputs/threshold_grid.csv` shows "
@@ -473,6 +478,16 @@ def terms(x: R) -> str:
         f"{x.v('IRF: draws widened by half').threshold_growth_pp:.2f}% a year, J "
         f"{x.v('IRF: draws widened by half').youden_j:.2f}). The contracts and strikes are unchanged.",
         "",
+        "## Changes on 4 Nov 2026",
+        f"- The conditional contracts' proposed code is {CODE_T}, following ForecastEx's pattern of Z, the "
+        "conditioning contract's code and the settlement contract's code (ZSENMFES, ZSENMUSR). It was WGDPCT.",
+        "- The conditioning event is the resolution of ForecastEx's GT contracts for 2027 at the two range bounds "
+        "(term 1). Conversion moves from a reading of NOAA's value on 31 January 2028 to GT's resolution, expected in "
+        "mid-January 2028.",
+        "- The GISTEMP fallback is dropped. If NOAA is late, conversion waits under GT's terms. GISTEMP takes its land "
+        "and ocean data from NOAA and was delayed with it in 2019, so it would not cover a NOAA outage.",
+        "- The ranges, strikes and chances are unchanged.",
+        "",
     ]
     return "\n".join(lines)
 
@@ -484,11 +499,13 @@ def terms(x: R) -> str:
 # gdp_fields, so the two cannot drift apart.
 
 TERMS = ROOT / "terms"
-CODE, CODE_T = "WGDPC", "WGDPCT"           # proposed product codes; ForecastEx assigns the real ones
-READ_CT = "10:00 AM CT"                    # proposed time of each reading (conversion, resolution)
+CODE, CODE_T = "WGDPC", "ZGTWGDPC"         # proposed product codes; the conditional follows ForecastEx's pattern of
+                                           # Z, the conditioning code and the settlement code. ForecastEx assigns them
+READ_CT = "10:00 AM CT"                    # proposed time of the WDI reading, and GT's resolution time
 WDI_API = "https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500"
 WDI_PAGE = "https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W"
-GISTEMP_CSV = "https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.csv"
+GT_TERMS = "https://data.forecastex.com/regulatory/GTTermsandConditions.pdf"
+GT_LISTED = {2027: "14 January 2028"}      # GT's resolution date as ForecastEx lists it (public API, 4 Nov 2026)
 REPO = "https://github.com/ptbrown31/climate-gdp-contract"
 PAGE = "https://weather.weatherclimatehumansystems.org/climate-gdp.html"
 PAYOUT = ("Each contract settles at $1.00 or $0.00. If the outcome is Yes, each Yes contract receives $1.00 and each "
@@ -497,9 +514,15 @@ TAIL = ("Position Accountability", "Last Trading Time", "Payout Criteria", "Ince
         "Changes in Resolution Time", "Expiration Time", "Settlement Time", "Trading Restrictions")
 
 
-def noaa_csv(year: int) -> str:
-    return ("https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series/globe/land_ocean/"
-            f"12/12/1850-{year}/data.csv")
+def gt_bounds(x: R) -> tuple[float, float]:
+    """The two GT thresholds that bound the ranges. NOAA publishes two decimals and GT resolves Yes above its
+    threshold, so the edge between the two-decimal values a and a + 0.01 is the threshold a."""
+    lo, hi = (math.floor(round(x.bin(name)["upper"] * 100, 6)) / 100 for name in ("cool", "central"))
+    return lo, hi
+
+
+def gt_when(year: int) -> str:
+    return GT_LISTED.get(year, f"a day in mid-January {year + 1}")
 
 
 def plain_ladder(x: R) -> pd.DataFrame:
@@ -630,8 +653,9 @@ def terms_timeline(x: R) -> str:
         [f"Now to mid-January {y1}", "Comment period. The indicative numbers refresh monthly."],
         [f"Mid-January {y1}", f"NOAA publishes its {x.base} annual value and the terms freeze. The plain contract "
                               f"({CODE}) and the conditional contracts ({CODE_T}) list."],
-        [f"31 January {y2}", f"NOAA's {y1} value is read. Conditional positions in the matching range convert into "
-                             f"{CODE}; the other two ranges are refunded at cost."],
+        [f"Mid-January {y2}", f"NOAA publishes its {y1} value, and ForecastEx's GT {y1} contracts resolve on it. "
+                              f"Conditional positions in the matching range convert into {CODE}, and the other two ranges "
+                              "are refunded at cost."],
         [f"Mid-{x.end + 1}", f"The World Bank publishes its first estimate for {x.end}."],
         [f"1 October {x.settle}", "Resolution on the WDI vintage current that day, then settlement."],
     ])
@@ -706,8 +730,8 @@ def flagship_terms(x: R) -> str:
         *[(k, g[k]) for k in TAIL],
     ]
     feed = [f"Whichever range NOAA's {y1} value falls in, that range's {thr}% conditional positions ({CODE_T}) "
-            f"convert into this contract on 31 January {x.base + 2}, at the same cost basis; the other ranges' "
-            "positions are refunded at cost."]
+            f"convert into this contract when ForecastEx's GT {y1} contracts resolve, expected in mid-January "
+            f"{x.base + 2}, at the same cost basis. The other ranges' positions are refunded at cost."]
     if abs(central["strike"] - f) > 1e-9:
         feed.append(f"The central range's headline threshold is now {central['strike']:.1f}%, while the threshold "
                     f"over all {y1} outcomes is {thr}%.")
@@ -740,36 +764,38 @@ def conditional_terms(x: R) -> str:
     g, y1, y2 = gdp_fields(x, "[##]"), x.base + 1, x.base + 2
     b0, b1, b2 = x.bin("cool"), x.bin("central"), x.bin("warm")
     t24 = float(x.shocks.loc[2024, "noaa_T"])
-    offset = x.prov.get("gistemp_minus_noaa_2016_2025", 0.007)
+    lo, hi = gt_bounds(x)
     fields = [
         ("Sample Question", gdp_question(x, "[##]", "[range]")),
         ("Variables", f"[range] is one of three ranges of NOAA's {y1} annual global temperature, in °C above the "
-                      f"1901–2000 average (cool, {rng_text(b0)}; central, {rng_text(b1)}; warm, {rng_text(b2)}). "
-                      "[##] is the growth threshold, in percent a year."),
+                      f"1901–2000 average, set by two thresholds of ForecastEx's Global Temperature contract (GT) for "
+                      f"{y1}, {lo:.2f} and {hi:.2f} °C (cool, {rng_text(b0)}; central, {rng_text(b1)}; warm, "
+                      f"{rng_text(b2)}). [##] is the growth threshold, in percent a year."),
         ("Product Code", f"{CODE_T} (proposed; ForecastEx assigns product codes)."),
-        ("Instructions", f"These are conditional contracts and work as ForecastEx's conditional contracts do. Three sets "
+        ("Instructions", f"These are conditional contracts and work as ForecastEx's conditional contracts ZSENMFES and "
+                         "ZSENMUSR do. Three sets "
                          f"list together, one for each range, each with the thresholds of the plain contract ({CODE}). "
                          f"At the Conversion Time, positions in the range that contains NOAA's {y1} value convert into "
                          f"the {CODE} contract with the same threshold, at the same cost basis; positions in the other "
                          "two ranges are refunded at cost, and fees are not refunded. Converted positions then resolve "
                          f"as {CODE} contracts. This contract is not subject to early Resolution."),
-        ("Conditioning Event", f"NOAA's {y1} annual global temperature, from NOAA NCEI Climate at a Glance (global "
-                               "land and ocean surface temperature, NOAAGlobalTemp). The value is the "
-                               f"January–December {y1} mean in °C above the 1901–2000 average, as published to two "
-                               "decimals at "
-                               f"{noaa_csv(y1)}. Each two-decimal "
-                               "value falls in exactly one range. This is the baseline of ForecastEx's Global "
-                               "Temperature contract (GT); its Annual Global Temperature Threshold contract (GTTA) "
-                               "states temperatures against 1850–1900 instead. For scale, NOAA's 2024 value, the "
-                               f"record so far, is {t24:.2f} °C."),
-        ("Conversion Time", f"31 January {y2}, {READ_CT} (proposed), when NOAA's {y1} value is read once and archived. "
-                            "If NOAA has not published it by then, Conversion waits for it. If it is still unpublished "
-                            f"on 31 March {y2}, the conditioning value is NASA GISTEMP v4's {y1} annual value "
-                            f"({GISTEMP_CSV}, column J-D) minus a fixed offset of {sg(offset, 3)} °C (the 2016–2025 "
-                            "mean of GISTEMP minus NOAA), read that day."),
+        ("Conditioning Event", f"The final resolution of ForecastEx's GT contracts for {y1} at {lo:.2f} and {hi:.2f} °C. "
+                               f"The cool range occurs if GT {y1} at {lo:.2f} resolves No, the central range if GT {y1} "
+                               f"at {lo:.2f} resolves Yes and GT {y1} at {hi:.2f} resolves No, and the warm range if GT "
+                               f"{y1} at {hi:.2f} resolves Yes. GT resolves on NOAA's {y1} annual global temperature, "
+                               "the January–December mean of global land and ocean surface temperature "
+                               "(NOAAGlobalTemp) in NOAA's annual global climate report, in °C above the 1901–2000 "
+                               f"average as first published to two decimals ({GT_TERMS}). Both GT contracts resolve on "
+                               "the same value, so exactly one range occurs. ForecastEx would list GT "
+                               f"{y1} at both bounds before these contracts list. Its Annual Global Temperature "
+                               "Threshold contract (GTTA) states temperatures against 1850–1900 instead. For scale, "
+                               f"NOAA's 2024 value, the record so far, is {t24:.2f} °C."),
+        ("Conversion Time", f"The Resolution Time of the GT {y1} contracts, {READ_CT} on the day NOAA publishes its {y1} "
+                            f"value. ForecastEx lists GT {y1} to resolve on {gt_when(y1)}. If NOAA is late, Conversion "
+                            "waits under GT's Delay by Source Agency provision. No other dataset stands in."),
         ("Underlying (after Conversion)", g["Underlying"]),
-        ("Source Agencies", "NOAA National Centers for Environmental Information (the Conditioning Event); World Bank, "
-                            "World Development Indicators (the Underlying)."),
+        ("Source Agencies", "NOAA National Centers for Environmental Information, through ForecastEx's GT contracts (the "
+                            "Conditioning Event); World Bank, World Development Indicators (the Underlying)."),
         ("Minimum Tick", g["Minimum Tick"]),
         ("Listing Cycle", f"One set of three ranges, proposed to list right after NOAA publishes its {x.base} annual "
                           f"global temperature (expected mid-January {y1}), alongside the plain contract ({CODE}). "
@@ -785,11 +811,11 @@ def conditional_terms(x: R) -> str:
         ("Incentive Coupon", g["Incentive Coupon"]),
         ("Resolution Time", f"For converted positions, the {CODE} Resolution Time applies, {g['Resolution Time']}"),
         ("Changes in Resolution Time",
-         "ForecastEx's standard provisions apply to the Conversion Time, with NOAA as the Source Agency, and to the "
-         "Resolution Time of converted positions, with the World Bank. If the Source Agency delays the data, "
-         "Conversion or Resolution waits for them; if it changes its release schedule, ForecastEx may move the "
-         "Conversion Time or Resolution Time to match; and ForecastEx may open its event review under Rule 415, which "
-         "can delay either. ForecastEx posts a public notice in each case. For converted positions, two more "
+         "GT's terms govern the Conversion Time, so a delay by NOAA delays Conversion. ForecastEx's standard provisions "
+         "apply to the Resolution Time of converted positions, with the World Bank as the Source Agency. If the World "
+         "Bank delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the "
+         "Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay "
+         "Conversion or Resolution. ForecastEx posts a public notice in each case. For converted positions, two more "
          "provisions apply:\n\n" + gdp_provisions(x)),
         ("Expiration Time", "For refunded positions, the Conversion Time; for converted positions, the Resolution "
                             "Time."),
@@ -1004,8 +1030,9 @@ def memo(x: R) -> str:
         "",
         table(["Series", "Source", "Use"], [
             ["Global mean temperature (contract record)", "NOAA NCEI Climate at a Glance (NOAAGlobalTemp), global land and "
-             "ocean, °C vs 1901–2000, annual and monthly", "Shocks, placeholders, the conditioning event"],
-            ["Comparison and fallback", "NASA GISTEMP v4 `GLB.Ts+dSST.csv`, J–D", "Fallback for the conditioning event"],
+             "ocean, °C vs 1901–2000, annual and monthly", "Shocks, placeholders, the conditioning event (through "
+             "ForecastEx's GT)"],
+            ["Comparison", "NASA GISTEMP v4 `GLB.Ts+dSST.csv`, J–D", "Alternative temperature record and validation"],
             ["Validation temperature", "Berkeley Earth Land+Ocean summary (ends 2024)", "Reproduces the authors' shocks"],
             ["ENSO", "CPC ONI and RONI", "2027 forecast; post-2027 simulation"],
             ["Outcome", "World Bank WDI `NY.GDP.PCAP.PP.KD`, WLD (constant 2021 PPP $)",
@@ -1187,7 +1214,7 @@ def memo(x: R) -> str:
         "https://github.com/dkaenzig/micc_replication and the shocks at "
         "https://github.com/dkaenzig/global-temperature-shocks",
         "- NOAA NCEI Climate at a Glance, https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series"
-        " · NOAA CPC ENSO indices · NASA GISTEMP v4 (comparison and fallback), https://data.giss.nasa.gov/gistemp/",
+        " · NOAA CPC ENSO indices · NASA GISTEMP v4 (comparison), https://data.giss.nasa.gov/gistemp/",
         "- World Bank WDI `NY.GDP.PCAP.PP.KD`, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD",
         "- IMF World Economic Outlook, October 2026 (DataMapper API), https://www.imf.org/external/datamapper",
         "- The critiques cited in §1 and §12 are Curtin and Burgess, \"The empirically inscrutable climate-economy "

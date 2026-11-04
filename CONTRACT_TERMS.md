@@ -1,6 +1,6 @@
 # Draft contract specification for world GDP per capita after the 2023–27 global temperature shocks
 
-*This is a **draft for comment**, refreshed 2026-10-31. The contracts were redesigned on 30 Oct 2026 (see "Changes on 30 Oct 2026" at the end).*
+*This is a **draft for comment**, refreshed 2026-10-31. The contracts were redesigned on 30 Oct 2026, and on 4 Nov 2026 their conditioning event moved to ForecastEx's Global Temperature contract (see the changes at the end).*
 
 - Three **conditional contracts**, one for each range of NOAA's 2027 global temperature, are proposed to list right after NOAA publishes its **2026 annual value (expected mid-January 2027)**.
 - The **plain ladder** asks the same question with no temperature condition and lists at the same time. Its terms are in `terms/plain_ladder_terms.md`.
@@ -28,7 +28,7 @@
 | ~Mid-Jan 2027 | NOAA publishes its 2026 annual value. At the final refresh the end year, conditions, strikes, IMF vintage and code are frozen and archived. |
 | Right after | **Conditional contracts list.** |
 | ~Mar 2027 | NOAA publishes the winter (DJF) El Niño strength. Market prices can move on it, and the terms stay fixed. |
-| ~Mid-Jan 2028 | NOAA publishes its 2027 annual value. **The matching condition converts; the other two are refunded at cost.** |
+| ~Mid-Jan 2028 | NOAA publishes its 2027 annual value, and ForecastEx's GT 2027 contracts resolve on it (listed for 14 January 2028). **The matching condition converts; the other two are refunded at cost.** |
 | Mid-2032 | World Bank publishes the first 2031 figure. |
 | **1 Oct 2033** | **Resolve and settle** on the WDI vintage of that date, one revision cycle after the first release. |
 
@@ -37,11 +37,11 @@
 Each term is open for comment until the freeze.
 
 ### 1. Conditioning event
-- The conditioning event is NOAA's 2027 global temperature, the January–December mean of global land and ocean surface temperature (NOAAGlobalTemp) in NOAA NCEI Climate at a Glance. It is in °C relative to the 1901–2000 average, as published to two decimals at `https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series/globe/land_ocean/12/12/1850-2027/data.csv`.
-- It is read once on 31 January 2028 and archived.
-- The conditions are cool (1.45 °C or lower), central (1.46 to 1.53 °C) and warm (1.54 °C or higher). For scale, the 2024 record is 1.25 °C.
+- The conditioning event is the resolution of ForecastEx's Global Temperature contracts (GT) for 2027 at two thresholds, the range bounds of 1.45 and 1.53 °C. ForecastEx's live conditional contracts (ZSENMFES, ZSENMUSR) use its Senate majority contract the same way.
+- GT resolves on NOAA's 2027 global temperature, the January–December mean of global land and ocean surface temperature (NOAAGlobalTemp) in NOAA's annual global climate report. It is in °C relative to the 1901–2000 average, as first published to two decimals (https://data.forecastex.com/regulatory/GTTermsandConditions.pdf).
+- The conditions are cool (1.45 °C or lower), central (1.46 to 1.53 °C) and warm (1.54 °C or higher). Cool occurs if GT 2027 at 1.45 resolves No, central if GT 2027 at 1.45 resolves Yes and GT 2027 at 1.53 resolves No, and warm if GT 2027 at 1.53 resolves Yes. For scale, the 2024 record is 1.25 °C.
 - Each boundary between ranges lies halfway between neighbouring percentiles of the current 2027 forecast. The percentiles are the 20th, 50th and 80th (1.41, 1.49 and 1.58 °C), so each range is about one-third likely today. The forecast is the filter's expectation for 2027 (1.20 °C) plus an ENSO-regression forecast of the 2027 shock (+0.24 ± 0.10 °C), with winter (DJF) RONI assumed ~N(2.6, 0.35). The ranges freeze with the other terms.
-- If NOAA has published no 2027 annual value by 31 March 2028, the **fallback** is NASA GISTEMP v4 (`GLB.Ts+dSST.csv`, column `J-D`) minus the fixed GISTEMP − NOAA offset, the 2016–2025 mean of +0.007 °C.
+- ForecastEx lists GT 2027 to resolve at 10:00 AM CT on 14 January 2028 and would list both bounds before the conditional contracts list. If NOAA is late, the GT resolution and the conversion wait for it. No other dataset stands in. NASA's GISTEMP takes its land and ocean data from NOAA and was delayed with it in 2019.
 
 ### 2. Settlement event
 - The settlement event is world GDP per capita growth from 2026 to 2031, measured with World Bank WDI `NY.GDP.PCAP.PP.KD` (GDP per capita, PPP, constant 2021 international $) for country `WLD`.
@@ -142,7 +142,7 @@ Each term is open for comment until the freeze.
 | 2.1% | 18% / 2% | 18% / 1% | 18% / 1% |
 
 ### 10. Conversion and refunds
-- When NOAA publishes its 2027 annual value, positions in the contracts whose condition was met convert to the unconditional contract with the same question and strike, at the same cost basis.
+- When the GT 2027 contracts resolve on NOAA's 2027 annual value, positions in the contracts whose condition was met convert to the unconditional contract with the same question and strike, at the same cost basis.
 - Positions in the other conditions' contracts are refunded at cost; fees are not refunded.
 - More strikes may be listed after conversion. The cutoff for the realised 2026 and 2027 values comes from `python -I run_analysis.py --lock <T2026> <T2027>` on the archived data (`outputs/threshold_grid.csv` shows how it moves).
 
@@ -196,3 +196,9 @@ Each entry gives who would raise it, the answer, and whether the design addresse
 
 ## Changes on 31 Oct 2026
 - Term 13 now cites the paper's own GDP-weighted panel (App. Fig. B.10, −9.9% at year 6) and checks the paper-side spread with wider draws (cutoff 1.09% a year, J 0.64). The contracts and strikes are unchanged.
+
+## Changes on 4 Nov 2026
+- The conditional contracts' proposed code is ZGTWGDPC, following ForecastEx's pattern of Z, the conditioning contract's code and the settlement contract's code (ZSENMFES, ZSENMUSR). It was WGDPCT.
+- The conditioning event is the resolution of ForecastEx's GT contracts for 2027 at the two range bounds (term 1). Conversion moves from a reading of NOAA's value on 31 January 2028 to GT's resolution, expected in mid-January 2028.
+- The GISTEMP fallback is dropped. If NOAA is late, conversion waits under GT's terms. GISTEMP takes its land and ocean data from NOAA and was delayed with it in 2019, so it would not cover a NOAA outage.
+- The ranges, strikes and chances are unchanged.

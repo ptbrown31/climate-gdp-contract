@@ -1,4 +1,4 @@
-# World GDP per Capita Growth, Conditional on NOAA's 2027 Global Temperature (WGDPCT): Contract Terms and Conditions
+# World GDP per Capita Growth, Conditional on NOAA's 2027 Global Temperature (ZGTWGDPC): Contract Terms and Conditions
 
 *Draft for comment, 2026-10-31. Proposed by Patrick T. Brown for listing on ForecastEx, in the layout of ForecastEx's published contract terms; ForecastEx sets the final wording, product codes, listings and thresholds. The end year, the ranges, the thresholds and the chances are indicative and refresh monthly with the analysis until the terms freeze in mid-January 2027.*
 
@@ -6,19 +6,19 @@
 
 **Sample Question:** If NOAA's 2027 global temperature is [range], will world GDP per capita grow by more than [##]% a year, on average, from 2026 to 2031?
 
-**Variables:** [range] is one of three ranges of NOAA's 2027 annual global temperature, in °C above the 1901–2000 average (cool, 1.45 °C or lower; central, 1.46 to 1.53 °C; warm, 1.54 °C or higher). [##] is the growth threshold, in percent a year.
+**Variables:** [range] is one of three ranges of NOAA's 2027 annual global temperature, in °C above the 1901–2000 average, set by two thresholds of ForecastEx's Global Temperature contract (GT) for 2027, 1.45 and 1.53 °C (cool, 1.45 °C or lower; central, 1.46 to 1.53 °C; warm, 1.54 °C or higher). [##] is the growth threshold, in percent a year.
 
-**Product Code:** WGDPCT (proposed; ForecastEx assigns product codes).
+**Product Code:** ZGTWGDPC (proposed; ForecastEx assigns product codes).
 
-**Instructions:** These are conditional contracts and work as ForecastEx's conditional contracts do. Three sets list together, one for each range, each with the thresholds of the plain contract (WGDPC). At the Conversion Time, positions in the range that contains NOAA's 2027 value convert into the WGDPC contract with the same threshold, at the same cost basis; positions in the other two ranges are refunded at cost, and fees are not refunded. Converted positions then resolve as WGDPC contracts. This contract is not subject to early Resolution.
+**Instructions:** These are conditional contracts and work as ForecastEx's conditional contracts ZSENMFES and ZSENMUSR do. Three sets list together, one for each range, each with the thresholds of the plain contract (WGDPC). At the Conversion Time, positions in the range that contains NOAA's 2027 value convert into the WGDPC contract with the same threshold, at the same cost basis; positions in the other two ranges are refunded at cost, and fees are not refunded. Converted positions then resolve as WGDPC contracts. This contract is not subject to early Resolution.
 
-**Conditioning Event:** NOAA's 2027 annual global temperature, from NOAA NCEI Climate at a Glance (global land and ocean surface temperature, NOAAGlobalTemp). The value is the January–December 2027 mean in °C above the 1901–2000 average, as published to two decimals at https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series/globe/land_ocean/12/12/1850-2027/data.csv. Each two-decimal value falls in exactly one range. This is the baseline of ForecastEx's Global Temperature contract (GT); its Annual Global Temperature Threshold contract (GTTA) states temperatures against 1850–1900 instead. For scale, NOAA's 2024 value, the record so far, is 1.25 °C.
+**Conditioning Event:** The final resolution of ForecastEx's GT contracts for 2027 at 1.45 and 1.53 °C. The cool range occurs if GT 2027 at 1.45 resolves No, the central range if GT 2027 at 1.45 resolves Yes and GT 2027 at 1.53 resolves No, and the warm range if GT 2027 at 1.53 resolves Yes. GT resolves on NOAA's 2027 annual global temperature, the January–December mean of global land and ocean surface temperature (NOAAGlobalTemp) in NOAA's annual global climate report, in °C above the 1901–2000 average as first published to two decimals (https://data.forecastex.com/regulatory/GTTermsandConditions.pdf). Both GT contracts resolve on the same value, so exactly one range occurs. ForecastEx would list GT 2027 at both bounds before these contracts list. Its Annual Global Temperature Threshold contract (GTTA) states temperatures against 1850–1900 instead. For scale, NOAA's 2024 value, the record so far, is 1.25 °C.
 
-**Conversion Time:** 31 January 2028, 10:00 AM CT (proposed), when NOAA's 2027 value is read once and archived. If NOAA has not published it by then, Conversion waits for it. If it is still unpublished on 31 March 2028, the conditioning value is NASA GISTEMP v4's 2027 annual value (https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.csv, column J-D) minus a fixed offset of +0.007 °C (the 2016–2025 mean of GISTEMP minus NOAA), read that day.
+**Conversion Time:** The Resolution Time of the GT 2027 contracts, 10:00 AM CT on the day NOAA publishes its 2027 value. ForecastEx lists GT 2027 to resolve on 14 January 2028. If NOAA is late, Conversion waits under GT's Delay by Source Agency provision. No other dataset stands in.
 
 **Underlying (after Conversion):** Average annual growth of world GDP per capita from 2026 to 2031, computed as 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5 and rounded to two decimals. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI vintage current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than [##]% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
 
-**Source Agencies:** NOAA National Centers for Environmental Information (the Conditioning Event); World Bank, World Development Indicators (the Underlying).
+**Source Agencies:** NOAA National Centers for Environmental Information, through ForecastEx's GT contracts (the Conditioning Event); World Bank, World Development Indicators (the Underlying).
 
 **Minimum Tick:** $0.01.
 
@@ -36,7 +36,7 @@
 
 **Resolution Time:** For converted positions, the WGDPC Resolution Time applies, 1 October 2033, 10:00 AM CT (proposed). The WDI series is read once at that time; the response, its lastupdated date and the growth computed from it are published with these terms.
 
-**Changes in Resolution Time:** ForecastEx's standard provisions apply to the Conversion Time, with NOAA as the Source Agency, and to the Resolution Time of converted positions, with the World Bank. If the Source Agency delays the data, Conversion or Resolution waits for them; if it changes its release schedule, ForecastEx may move the Conversion Time or Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay either. ForecastEx posts a public notice in each case. For converted positions, two more provisions apply:
+**Changes in Resolution Time:** GT's terms govern the Conversion Time, so a delay by NOAA delays Conversion. ForecastEx's standard provisions apply to the Resolution Time of converted positions, with the World Bank as the Source Agency. If the World Bank delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay Conversion or Resolution. ForecastEx posts a public notice in each case. For converted positions, two more provisions apply:
 
 1. **Missing years.** If the vintage current at the Resolution Time has no value for 2026 or 2031, the contract resolves on the most recent earlier vintage that has both (the World Bank keeps past WDI vintages in its database archives) or, if none does, on the first later vintage that does. If no vintage has both by 1 October 2034, ForecastEx cancels the contract and refunds every position at cost.
 2. **Discontinued series.** If the World Bank discontinues the series, the contract uses its official successor (world GDP per capita, PPP, constant prices). If there is none, ForecastEx cancels the contract and refunds every position at cost.
@@ -90,8 +90,8 @@ Each cell gives the chance of Yes if temperature shocks have no effect / if the 
 | When | What happens |
 |---|---|
 | Now to mid-January 2027 | Comment period. The indicative numbers refresh monthly. |
-| Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (WGDPCT) list. |
-| 31 January 2028 | NOAA's 2027 value is read. Conditional positions in the matching range convert into WGDPC; the other two ranges are refunded at cost. |
+| Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (ZGTWGDPC) list. |
+| Mid-January 2028 | NOAA publishes its 2027 value, and ForecastEx's GT 2027 contracts resolve on it. Conditional positions in the matching range convert into WGDPC, and the other two ranges are refunded at cost. |
 | Mid-2032 | The World Bank publishes its first estimate for 2031. |
 | 1 October 2033 | Resolution on the WDI vintage current that day, then settlement. |
 

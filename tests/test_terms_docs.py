@@ -60,3 +60,15 @@ def test_no_gambling_language(docs):
         words = re.findall(r"\b(bet|bets|betting|odds|win|wins|winning|wager|wagers)\b",
                            text.replace("Simon–Ehrlich wager", ""), re.I)
         assert not words, (name, words)
+
+
+def test_gt_bounds_give_the_ranges(x):
+    """GT resolves Yes above its threshold on NOAA's two-decimal value, so the two bounds must split every
+    two-decimal value into the range the run labels it with."""
+    lo, hi = B.gt_bounds(x)
+    for t in [round(0.01 * k, 2) for k in range(100, 200)]:
+        name = "cool" if not t > lo else ("central" if not t > hi else "warm")
+        b = x.bin(name)
+        assert (b["lower"] is None or t > b["lower"]) and (b["upper"] is None or t <= b["upper"]), (t, name)
+    assert B.rng_text(x.bin("cool")).startswith(f"{lo:.2f} ")
+    assert B.rng_text(x.bin("central")).endswith(f"{hi:.2f} °C")

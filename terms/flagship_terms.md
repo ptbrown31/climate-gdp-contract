@@ -18,7 +18,7 @@
 
 **Minimum Tick:** $0.01.
 
-**Listing:** Proposed to list right after NOAA publishes its 2026 annual global temperature (expected mid-January 2027), as the 1.1% contract of the WGDPC ladder, alongside the conditional contracts (WGDPCT).
+**Listing:** Proposed to list right after NOAA publishes its 2026 annual global temperature (expected mid-January 2027), as the 1.1% contract of the WGDPC ladder, alongside the conditional contracts (ZGTWGDPC).
 
 **Threshold:** 1.1% a year. It is the growth rate that best separates the two views over all 2027 outcomes, the cutoff that maximises Youden's J (1.09% a year), rounded to 0.1 point.
 
@@ -62,15 +62,15 @@ With no temperature effect, average growth from 2026 to 2031 has a median of 1.6
 
 ### How the conditional contracts feed it
 
-Whichever range NOAA's 2027 value falls in, that range's 1.1% conditional positions (WGDPCT) convert into this contract on 31 January 2028, at the same cost basis; the other ranges' positions are refunded at cost.
+Whichever range NOAA's 2027 value falls in, that range's 1.1% conditional positions (ZGTWGDPC) convert into this contract when ForecastEx's GT 2027 contracts resolve, expected in mid-January 2028, at the same cost basis. The other ranges' positions are refunded at cost.
 
 ### Timeline
 
 | When | What happens |
 |---|---|
 | Now to mid-January 2027 | Comment period. The indicative numbers refresh monthly. |
-| Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (WGDPCT) list. |
-| 31 January 2028 | NOAA's 2027 value is read. Conditional positions in the matching range convert into WGDPC; the other two ranges are refunded at cost. |
+| Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (ZGTWGDPC) list. |
+| Mid-January 2028 | NOAA publishes its 2027 value, and ForecastEx's GT 2027 contracts resolve on it. Conditional positions in the matching range convert into WGDPC, and the other two ranges are refunded at cost. |
 | Mid-2032 | The World Bank publishes its first estimate for 2031. |
 | 1 October 2033 | Resolution on the WDI vintage current that day, then settlement. |
 

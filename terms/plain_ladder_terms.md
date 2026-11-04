@@ -18,9 +18,9 @@
 
 **Minimum Tick:** $0.01.
 
-**Listing Cycle:** One expiration, for growth from 2026 to 2031, proposed to list right after NOAA publishes its 2026 annual global temperature (expected mid-January 2027), alongside the conditional contracts (WGDPCT). ForecastEx lists expirations at its discretion.
+**Listing Cycle:** One expiration, for growth from 2026 to 2031, proposed to list right after NOAA publishes its 2026 annual global temperature (expected mid-January 2027), alongside the conditional contracts (ZGTWGDPC). ForecastEx lists expirations at its discretion.
 
-**Thresholds:** The proposed thresholds are 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.7, 1.9 and 2.1% a year. The conditional contracts (WGDPCT) list the same thresholds, so every conditional position has a contract here to convert into. The 1.1% contract is the flagship, also set out in its own terms. ForecastEx lists thresholds at its discretion.
+**Thresholds:** The proposed thresholds are 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.3, 1.5, 1.7, 1.9 and 2.1% a year. The conditional contracts (ZGTWGDPC) list the same thresholds, so every conditional position has a contract here to convert into. The 1.1% contract is the flagship, also set out in its own terms. ForecastEx lists thresholds at its discretion.
 
 **Position Accountability:** 250,000 contracts in any one Forecast Market (ForecastEx's standard level).
 
@@ -78,8 +78,8 @@ With no temperature effect, average growth from 2026 to 2031 has a median of 1.6
 | When | What happens |
 |---|---|
 | Now to mid-January 2027 | Comment period. The indicative numbers refresh monthly. |
-| Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (WGDPCT) list. |
-| 31 January 2028 | NOAA's 2027 value is read. Conditional positions in the matching range convert into WGDPC; the other two ranges are refunded at cost. |
+| Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (ZGTWGDPC) list. |
+| Mid-January 2028 | NOAA publishes its 2027 value, and ForecastEx's GT 2027 contracts resolve on it. Conditional positions in the matching range convert into WGDPC, and the other two ranges are refunded at cost. |
 | Mid-2032 | The World Bank publishes its first estimate for 2031. |
 | 1 October 2033 | Resolution on the WDI vintage current that day, then settlement. |
 

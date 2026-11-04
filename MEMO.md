@@ -44,8 +44,8 @@ Everything below was produced by `python -I run_analysis.py` and written by `bui
 
 | Series | Source | Use |
 |---|---|---|
-| Global mean temperature (contract record) | NOAA NCEI Climate at a Glance (NOAAGlobalTemp), global land and ocean, °C vs 1901–2000, annual and monthly | Shocks, placeholders, the conditioning event |
-| Comparison and fallback | NASA GISTEMP v4 `GLB.Ts+dSST.csv`, J–D | Fallback for the conditioning event |
+| Global mean temperature (contract record) | NOAA NCEI Climate at a Glance (NOAAGlobalTemp), global land and ocean, °C vs 1901–2000, annual and monthly | Shocks, placeholders, the conditioning event (through ForecastEx's GT) |
+| Comparison | NASA GISTEMP v4 `GLB.Ts+dSST.csv`, J–D | Alternative temperature record and validation |
 | Validation temperature | Berkeley Earth Land+Ocean summary (ends 2024) | Reproduces the authors' shocks |
 | ENSO | CPC ONI and RONI | 2027 forecast; post-2027 simulation |
 | Outcome | World Bank WDI `NY.GDP.PCAP.PP.KD`, WLD (constant 2021 PPP $) | Settlement; 2025 = $21,914 |
@@ -245,7 +245,7 @@ python -I -m pytest tests -q -p no:cacheprovider
 ### Sources
 
 - Bilal & Känzig (2026), *QJE* 141(2), https://doi.org/10.1093/qje/qjag011, with the replication package at https://github.com/dkaenzig/micc_replication and the shocks at https://github.com/dkaenzig/global-temperature-shocks
-- NOAA NCEI Climate at a Glance, https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series · NOAA CPC ENSO indices · NASA GISTEMP v4 (comparison and fallback), https://data.giss.nasa.gov/gistemp/
+- NOAA NCEI Climate at a Glance, https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series · NOAA CPC ENSO indices · NASA GISTEMP v4 (comparison), https://data.giss.nasa.gov/gistemp/
 - World Bank WDI `NY.GDP.PCAP.PP.KD`, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD
 - IMF World Economic Outlook, October 2026 (DataMapper API), https://www.imf.org/external/datamapper
 - The critiques cited in §1 and §12 are Curtin and Burgess, "The empirically inscrutable climate-economy relationship" (University of Wyoming working paper, 31 July 2026), and Kahn, "Real-Time Information Shocks and Climate Change Economic Damage Estimation" (working paper, 30 September 2026).
