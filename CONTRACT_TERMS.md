@@ -45,7 +45,7 @@ Each term is open for comment until the freeze.
 
 ### 2. Settlement event
 - The settlement event is world GDP per capita growth from 2026 to 2031, measured with World Bank WDI `NY.GDP.PCAP.PP.KD` (GDP per capita, PPP, constant 2021 international $) for country `WLD`.
-- **Growth = 100 × ln(y2031 / y2026) / 5**, with both levels from the single resolution-date vintage, so PPP rebasings and level revisions cancel. Growth is computed to two decimals, and the contract resolves **Yes if growth is strictly greater than the strike.**
+- **Growth = 100 × ln(y2031 / y2026) / 5**, with both levels from the single resolution-date vintage, so PPP rebasings and level revisions cancel. Growth is used unrounded, and the contract resolves **Yes if growth is strictly greater than the strike.**
 - This is average log growth. At these rates it is within 0.03 points of the compound annual rate.
 - 2026 is the last full year before listing, so none of the growth being measured (2027–2031) is known when the contracts list.
 
@@ -148,8 +148,7 @@ Each term is open for comment until the freeze.
 
 ### 11. Resolution and settlement
 - **1 Oct 2033.** Retrieve the WDI series once, archive the response and its `lastupdated` field, and compute growth with the archived code.
-- If 2026 or 2031 is missing from that vintage, use the latest vintage that has both. If none exists by 1 Oct 2034, the contracts are void.
-- If the indicator is discontinued, use its official successor (world GDP per capita, PPP, constant prices). Otherwise the contracts are void.
+- If 2026 or 2031 is missing from that vintage, or the indicator is discontinued, ForecastEx resolves the contracts under its event review (Rule 415).
 
 ### 12. Acknowledged limits
 - One outcome cannot confirm or refute the paper. A global recession year can move five-year growth by several points; 2020 alone was −3.9%.
@@ -201,4 +200,6 @@ Each entry gives who would raise it, the answer, and whether the design addresse
 - The conditional contracts' proposed code is ZGTWGDPC, following ForecastEx's pattern of Z, the conditioning contract's code and the settlement contract's code (ZSENMFES, ZSENMUSR). It was WGDPCT.
 - The conditioning event is the resolution of ForecastEx's GT contracts for 2027 at the two range bounds (term 1). Conversion moves from a reading of NOAA's value on 31 January 2028 to GT's resolution, expected in mid-January 2028.
 - The GISTEMP fallback is dropped. If NOAA is late, conversion waits under GT's terms. GISTEMP takes its land and ocean data from NOAA and was delayed with it in 2019, so it would not cover a NOAA outage.
+- Growth is used unrounded. It was rounded to two decimals.
+- A missing year or a discontinued series goes to ForecastEx's event review (Rule 415). The contracts used to fall back on archived vintages or an official successor and were cancelled at cost otherwise.
 - The ranges, strikes and chances are unchanged.

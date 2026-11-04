@@ -291,7 +291,7 @@ def terms(x: R) -> str:
         f"- The settlement event is world GDP per capita growth from {x.base} to {x.end}, measured with World Bank WDI "
         "`NY.GDP.PCAP.PP.KD` (GDP per capita, PPP, constant 2021 international $) for country `WLD`.",
         f"- **Growth = 100 × ln(y{x.end} / y{x.base}) / {x.span}**, with both levels from the single resolution-date "
-        "vintage, so PPP rebasings and level revisions cancel. Growth is computed to two decimals, and the contract "
+        "vintage, so PPP rebasings and level revisions cancel. Growth is used unrounded, and the contract "
         "resolves **Yes if growth is strictly greater than the strike.**",
         f"- This is average log growth. At these rates it is within 0.03 points of the compound annual rate.",
         f"- {x.base} is the last full year before listing, so none of the growth being measured ({x.base + 1}–{x.end}) "
@@ -414,10 +414,8 @@ def terms(x: R) -> str:
         "### 11. Resolution and settlement",
         f"- **1 Oct {x.settle}.** Retrieve the WDI series once, archive the response and its `lastupdated` field, and "
         "compute growth with the archived code.",
-        f"- If {x.base} or {x.end} is missing from that vintage, use the latest vintage that has both. If none exists by "
-        f"1 Oct {x.settle + 1}, the contracts are void.",
-        "- If the indicator is discontinued, use its official successor (world GDP per capita, PPP, constant prices). "
-        "Otherwise the contracts are void.",
+        f"- If {x.base} or {x.end} is missing from that vintage, or the indicator is discontinued, ForecastEx resolves "
+        "the contracts under its event review (Rule 415).",
         "",
         "### 12. Acknowledged limits",
         f"- One outcome cannot confirm or refute the paper. A global recession year can move "
@@ -486,6 +484,9 @@ def terms(x: R) -> str:
         "mid-January 2028.",
         "- The GISTEMP fallback is dropped. If NOAA is late, conversion waits under GT's terms. GISTEMP takes its land "
         "and ocean data from NOAA and was delayed with it in 2019, so it would not cover a NOAA outage.",
+        "- Growth is used unrounded. It was rounded to two decimals.",
+        "- A missing year or a discontinued series goes to ForecastEx's event review (Rule 415). The contracts used to "
+        "fall back on archived vintages or an official successor and were cancelled at cost otherwise.",
         "- The ranges, strikes and chances are unchanged.",
         "",
     ]
@@ -555,14 +556,9 @@ def restrict(agencies: str) -> str:
             f"about it, is an employee of {agencies}, or has any direct or indirect influence over its outcome.")
 
 
-def gdp_provisions(x: R) -> str:
-    cancel = "ForecastEx cancels the contract and refunds every position at cost"
-    return (f"1. **Missing years.** If the vintage current at the Resolution Time has no value for {x.base} or {x.end}, "
-            "the contract resolves on the most recent earlier vintage that has both (the World Bank keeps past WDI "
-            "vintages in its database archives) or, if none does, on the first later vintage that does. If no vintage "
-            f"has both by 1 October {x.settle + 1}, {cancel}.\n"
-            "2. **Discontinued series.** If the World Bank discontinues the series, the contract uses its official "
-            f"successor (world GDP per capita, PPP, constant prices). If there is none, {cancel}.")
+def gdp_provisions(x: R, lead: str = "If") -> str:
+    return (f"{lead} the vintage current at the Resolution Time has no value for {x.base} or {x.end}, or the World "
+            "Bank has discontinued the series, ForecastEx resolves the contract under its event review (Rule 415).")
 
 
 def gdp_fields(x: R, thr: str) -> dict[str, str]:
@@ -576,7 +572,7 @@ def gdp_fields(x: R, thr: str) -> dict[str, str]:
             "both years read from that one vintage. This contract is not subject to early Resolution.",
         "Underlying":
             f"Average annual growth of world GDP per capita from {x.base} to {x.end}, computed as 100 × ln(GDP per "
-            f"capita in {x.end} ÷ GDP per capita in {x.base}) ÷ {x.span} and rounded to two decimals. GDP per capita "
+            f"capita in {x.end} ÷ GDP per capita in {x.base}) ÷ {x.span} and not rounded. GDP per capita "
             "is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World "
             f"aggregate (code WLD), available at {WDI_API} (the indicator's page, {WDI_PAGE}, shows the same series). Both "
             "years come from the WDI vintage current at the Resolution "
@@ -599,7 +595,7 @@ def gdp_fields(x: R, thr: str) -> dict[str, str]:
             "ForecastEx's standard provisions apply. If the Source Agency delays the data, Resolution waits for them; "
             "if it changes its release schedule, ForecastEx may move the Resolution Time to match; and ForecastEx may "
             "open its event review under Rule 415, which can delay Resolution. ForecastEx posts a public notice in "
-            "each case. Two more provisions apply to this contract:\n\n" + gdp_provisions(x),
+            "each case. " + gdp_provisions(x),
         "Expiration Time": "Same as the Resolution Time.",
         "Settlement Time":
             "Under ForecastEx Rule 603(b)(3), settlement takes place at 1:00 PM CT on the day of Resolution if "
@@ -815,8 +811,8 @@ def conditional_terms(x: R) -> str:
          "apply to the Resolution Time of converted positions, with the World Bank as the Source Agency. If the World "
          "Bank delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the "
          "Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay "
-         "Conversion or Resolution. ForecastEx posts a public notice in each case. For converted positions, two more "
-         "provisions apply:\n\n" + gdp_provisions(x)),
+         "Conversion or Resolution. ForecastEx posts a public notice in each case. "
+         + gdp_provisions(x, "For converted positions, if")),
         ("Expiration Time", "For refunded positions, the Conversion Time; for converted positions, the Resolution "
                             "Time."),
         ("Settlement Time", g["Settlement Time"]),
