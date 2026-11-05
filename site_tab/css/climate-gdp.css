@@ -78,6 +78,8 @@
 .gdp-tbl th,.gdp-tbl td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 .gdp-tbl th{font-weight:700;color:var(--navy);background:var(--shade)}
 .gdp-tblwrap{overflow-x:auto}
+/* a long address in the text breaks rather than widening the page on a phone */
+.gdp-article a{overflow-wrap:anywhere}
 .gdp-article a.figref{white-space:nowrap}
 
 /* the Letter: affiliations, the summary paragraph, citations, panel letters, equations, references, tables */

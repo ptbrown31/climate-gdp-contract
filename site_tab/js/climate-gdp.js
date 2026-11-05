@@ -80,7 +80,8 @@ window.WXGdp = (() => {
     if (busy) { schedule(30); return; }
     busy = true;
     try {
-      if (!M.ready(S)) { status('Loading what that setting needs…', true); await M.ensure(S); }
+      // a setting changed while a file loads can need another file, so load until the current settings are ready
+      while (!M.ready(S)) { status('Loading what that setting needs…', true); await M.ensure(S); }
       const t0 = performance.now();
       R = M.run(S);
       scanCache = null;
