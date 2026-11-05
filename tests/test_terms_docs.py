@@ -83,6 +83,13 @@ def test_resolution_follows_the_first_estimate(x, docs):
         assert "on the first business day of the next month" in text, name
 
 
+def test_documents_use_the_world_banks_word(x, docs):
+    """The World Bank's archive calls each edition of the WDI a version, and the documents use its word."""
+    for name, text in {**docs, "CONTRACT_TERMS": B.terms(x)}.items():
+        assert not re.search("vintage", text, re.I), name
+        assert "WDI version" in text, name
+
+
 def test_archive_summary_matches_its_rows():
     """The figures CONTRACT_TERMS.md quotes from wdi_revisions.py's summary are those of its own rows."""
     w = json.loads((B.OUT / "wdi_revisions.json").read_text())

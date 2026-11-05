@@ -50,10 +50,10 @@ Everything below was produced by `python -I run_analysis.py` and written by `bui
 | ENSO | CPC ONI and RONI | 2027 forecast; post-2027 simulation |
 | Outcome | World Bank WDI `NY.GDP.PCAP.PP.KD`, WLD (constant 2021 PPP $) | Settlement; 2025 = $21,914 |
 | No-effect baseline | IMF WEO October 2026, DataMapper `NGDP_RPCH` and `LP`, WEOWORLD | Baseline per-capita growth |
-| Spread of background growth | IMF Historical WEO Forecasts Database (`WEOhistorical.xlsx`, sheet `ngdp_rpch`), October vintages 1990–2020 | Forecast-error paths, including the average miss |
+| Spread of background growth | IMF Historical WEO Forecasts Database (`WEOhistorical.xlsx`, sheet `ngdp_rpch`), October WEOs 1990–2020 | Forecast-error paths, including the average miss |
 | IRF and shocks | `dkaenzig/micc_replication`; `dkaenzig/global-temperature-shocks` | Response, validation |
 
-The vintages are recorded in `outputs/results.json → vintages`.
+Each download's address, time and checksum are recorded in `outputs/results.json → vintages`.
 
 ## 3. Temperature shocks
 

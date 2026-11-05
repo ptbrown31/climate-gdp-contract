@@ -16,7 +16,7 @@
 
 **Conversion Time:** The Resolution Time of the GT 2027 contracts, 10:00 AM CT on the day NOAA publishes its 2027 value. ForecastEx lists GT 2027 to resolve on 14 January 2028. If NOAA is late, Conversion waits under GT's Delay by Source Agency provision. No other dataset stands in.
 
-**Underlying (after Conversion):** Average annual growth of world GDP per capita from 2026 to 2031, computed as 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5 and not rounded. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI vintage current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than [##]% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
+**Underlying (after Conversion):** Average annual growth of world GDP per capita from 2026 to 2031, computed as 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5 and not rounded. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI version current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than [##]% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
 
 **Source Agencies:** NOAA National Centers for Environmental Information, through ForecastEx's GT contracts (the Conditioning Event); World Bank, World Development Indicators (the Underlying).
 
@@ -36,7 +36,7 @@
 
 **Resolution Time:** For converted positions, the WGDPC Resolution Time applies, 1 October 2032, 10:00 AM CT (proposed). The WDI series is read once at that time; the response, its lastupdated date and the growth computed from it are published with these terms.
 
-**Changes in Resolution Time:** GT's terms govern the Conversion Time, so a delay by NOAA delays Conversion. ForecastEx's standard provisions apply to the Resolution Time of converted positions, with the World Bank as the Source Agency. If the World Bank delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay Conversion or Resolution. ForecastEx posts a public notice in each case. For converted positions, if the vintage current at the Resolution Time has no value for 2026 or 2031, the Resolution Time moves to 10:00 AM CT on the first business day of the next month, and so on each month until the vintage current at that time has both years. If the World Bank has discontinued the series, ForecastEx resolves the contract under its event review (Rule 415).
+**Changes in Resolution Time:** GT's terms govern the Conversion Time, so a delay by NOAA delays Conversion. ForecastEx's standard provisions apply to the Resolution Time of converted positions, with the World Bank as the Source Agency. If the World Bank delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay Conversion or Resolution. ForecastEx posts a public notice in each case. For converted positions, if the WDI version current at the Resolution Time has no value for 2026 or 2031, the Resolution Time moves to 10:00 AM CT on the first business day of the next month, and so on each month until the version current at that time has both years. If the World Bank has discontinued the series, ForecastEx resolves the contract under its event review (Rule 415).
 
 **Expiration Time:** For refunded positions, the Conversion Time; for converted positions, the Resolution Time.
 
@@ -90,7 +90,7 @@ Each cell gives the chance of Yes if temperature shocks have no effect / if the 
 | Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (ZGTWGDPC) list. |
 | Mid-January 2028 | NOAA publishes its 2027 value, and ForecastEx's GT 2027 contracts resolve on it. Conditional positions in the matching range convert into WGDPC, and the other two ranges are refunded at cost. |
 | Mid-2032 | The World Bank publishes its first estimate for 2031. |
-| 1 October 2032 | Resolution on the WDI vintage current that day, then settlement. |
+| 1 October 2032 | Resolution on the WDI version current that day, then settlement. |
 
 ### Data and code
 

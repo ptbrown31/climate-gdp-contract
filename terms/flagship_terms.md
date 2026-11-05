@@ -10,9 +10,9 @@
 
 **Product Code:** WGDPC, threshold 1.1% (proposed; ForecastEx assigns product codes).
 
-**Instructions:** The World Bank updates its World Development Indicators (WDI) several times a year. Its first estimate of world GDP per capita for 2031 usually appears in mid-2032. This contract resolves on the vintage current on 1 October 2032, about three months later, with both years read from that one vintage. This contract is not subject to early Resolution.
+**Instructions:** The World Bank updates its World Development Indicators (WDI) several times a year. Its first estimate of world GDP per capita for 2031 usually appears in mid-2032. This contract resolves on the WDI version current on 1 October 2032, about three months later, with both years read from that one version. This contract is not subject to early Resolution.
 
-**Underlying:** Average annual growth of world GDP per capita from 2026 to 2031, computed as 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5 and not rounded. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI vintage current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than 1.1% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
+**Underlying:** Average annual growth of world GDP per capita from 2026 to 2031, computed as 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5 and not rounded. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI version current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than 1.1% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
 
 **Source Agency:** World Bank, World Development Indicators (compiled by its Development Data Group).
 
@@ -32,7 +32,7 @@
 
 **Resolution Time:** 1 October 2032, 10:00 AM CT (proposed). The WDI series is read once at that time; the response, its lastupdated date and the growth computed from it are published with these terms.
 
-**Changes in Resolution Time:** ForecastEx's standard provisions apply. If the Source Agency delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay Resolution. ForecastEx posts a public notice in each case. If the vintage current at the Resolution Time has no value for 2026 or 2031, the Resolution Time moves to 10:00 AM CT on the first business day of the next month, and so on each month until the vintage current at that time has both years. If the World Bank has discontinued the series, ForecastEx resolves the contract under its event review (Rule 415).
+**Changes in Resolution Time:** ForecastEx's standard provisions apply. If the Source Agency delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay Resolution. ForecastEx posts a public notice in each case. If the WDI version current at the Resolution Time has no value for 2026 or 2031, the Resolution Time moves to 10:00 AM CT on the first business day of the next month, and so on each month until the version current at that time has both years. If the World Bank has discontinued the series, ForecastEx resolves the contract under its event review (Rule 415).
 
 **Expiration Time:** Same as the Resolution Time.
 
@@ -69,7 +69,7 @@ Whichever range NOAA's 2027 value falls in, that range's 1.1% conditional positi
 | Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (ZGTWGDPC) list. |
 | Mid-January 2028 | NOAA publishes its 2027 value, and ForecastEx's GT 2027 contracts resolve on it. Conditional positions in the matching range convert into WGDPC, and the other two ranges are refunded at cost. |
 | Mid-2032 | The World Bank publishes its first estimate for 2031. |
-| 1 October 2032 | Resolution on the WDI vintage current that day, then settlement. |
+| 1 October 2032 | Resolution on the WDI version current that day, then settlement. |
 
 ### Data and code
 

@@ -25,12 +25,12 @@
 | When | What happens |
 |---|---|
 | Now to mid-Jan 2027 | Proposal circulates for comment. Indicative numbers refresh monthly, after NOAA's monthly release. |
-| ~Mid-Jan 2027 | NOAA publishes its 2026 annual value. At the final refresh the end year, conditions, strikes, IMF vintage and code are frozen and archived. |
+| ~Mid-Jan 2027 | NOAA publishes its 2026 annual value. At the final refresh the end year, conditions, strikes, IMF forecast and code are frozen and archived. |
 | Right after | **Conditional contracts list.** |
 | ~Mar 2027 | NOAA publishes the winter (DJF) El Niño strength. Market prices can move on it, and the terms stay fixed. |
 | ~Mid-Jan 2028 | NOAA publishes its 2027 annual value, and ForecastEx's GT 2027 contracts resolve on it (listed for 14 January 2028). **The matching condition converts; the other two are refunded at cost.** |
 | Mid-2032 | World Bank publishes the first 2031 figure. |
-| **1 Oct 2032** | **Resolve and settle** on the WDI vintage of that date, about three months after the first release. |
+| **1 Oct 2032** | **Resolve and settle** on the WDI version of that date, about three months after the first release. |
 
 ## Proposed terms
 
@@ -46,7 +46,7 @@ Each term is open for comment until the freeze.
 ### 2. Settlement event
 - The settlement event is world GDP per capita growth from 2026 to 2031, measured with World Bank WDI `NY.GDP.PCAP.PP.KD` (GDP per capita, PPP, constant 2021 international $) for country `WLD`.
 - The contract settles on the series that most closely follows the paper's GDP data among those published in time to settle it. The paper's estimate is fitted on the Penn World Table's world GDP per capita, whose releases lag several years. Of the World Bank's series, the PPP series tracks it most closely, with five-year average growth 0.20 points a year apart (root mean square over windows ending 1995–2019). The World Bank's published growth rate, `NY.GDP.PCAP.KD.ZG`, measures growth in constant 2015 dollars at market exchange rates and sits 0.37 points apart. The paper's own check on that constant-dollar series (its App. Fig. B.11) gives very similar estimates.
-- **Growth = 100 × ln(y2031 / y2026) / 5**, with both levels from the single resolution-date vintage, so PPP rebasings and level revisions cancel. Growth is used unrounded, and the contract resolves **Yes if growth is strictly greater than the strike.**
+- **Growth = 100 × ln(y2031 / y2026) / 5**, with both levels from the single resolution-date version, so PPP rebasings and level revisions cancel. Growth is used unrounded, and the contract resolves **Yes if growth is strictly greater than the strike.**
 - This is average log growth. At these rates it is within 0.03 points of the compound annual rate.
 - 2026 is the last full year before listing, so none of the growth being measured (2027–2031) is known when the contracts list.
 
@@ -71,7 +71,7 @@ Each term is open for comment until the freeze.
 
 ### 4. Shock definition
 - `s_t = T_t − (0.038438 + 0.496114·T_(t−2) + 0.485010·T_(t−3))`.
-  - These are the Hamilton h=2, p=2 coefficients fitted on NOAA over the paper's own window (dependent years 1953–2022, data from 1950; paper footnote 2), on the archived 17 Oct 2026 annual vintage. The coefficients are frozen, so the 2023–27 warmth is measured out of sample, against a trend fitted without it.
+  - These are the Hamilton h=2, p=2 coefficients fitted on NOAA over the paper's own window (dependent years 1953–2022, data from 1950; paper footnote 2), on the annual series archived on 17 Oct 2026. The coefficients are frozen, so the 2023–27 warmth is measured out of sample, against a trend fitted without it.
   - Refitting through 2025 would shrink each 2023–27 shock by about 0.04–0.05 °C (gap 5.0 points, J 0.62).
 - The **innovations** are `u_t = s_t − (0.008832 + 0.362637·s_(t−1) − 0.377483·s_(t−2))`.
   - This matches how the paper's regression defines its response and avoids double counting back-to-back warm years.
@@ -97,7 +97,7 @@ Each term is open for comment until the freeze.
 - The no-effect baseline is the IMF projection in the October 2026 World Economic Outlook (DataMapper, retrieved 17 Oct 2026). It puts world real GDP growth at 3.4% in 2027, 3.3% in 2028, 3.2% in 2029, 3.1% in 2030 and 3.1% in 2031. World population comes from the same release.
 - Per-capita growth = 100·ln(1 + g/100) − 100·Δln(population), plus the 1991–2025 mean gap between WDI and IMF-implied per-capita growth (−0.07 points, correlation 0.99).
 - Baseline per-capita growth is 2.42% in 2027, 2.34% in 2028, 2.26% in 2029, 2.15% in 2030 and 2.14% in 2031, a **mean of 2.26% a year** (the 2000–2019 average was 2.29%). Beyond 2031 the 2031 rate is held.
-- The baseline stays frozen at the October 2026 vintage, because the January 2027 WEO Update usually appears after mid-January and projects only two years.
+- The baseline stays frozen at the October 2026 WEO, because the January 2027 WEO Update usually appears after mid-January and projects only two years.
 - The **spread** comes from the IMF's own historical forecast errors for world real GDP growth by years ahead. They are resampled as whole forecast paths so that multi-year misses (recessions, slowdowns) keep their persistence, then smoothed so the distribution is continuous. The errors are those of the October World Economic Outlooks of 1990–2020 (31 forecasts, IMF Historical WEO Forecasts Database), measured against the October 2026 WEO's estimates of what happened. Years past the IMF's six-year horizon are drawn independently from its six-year-ahead errors (misses in neighbouring years are close to uncorrelated). **The IMF's average miss is kept.** Over five-year windows like 2027–2031, world growth came in 3.1 points in total below the IMF's forecast on average (sd 2.7), or about 0.6 a year. It came in below the forecast in 27 of 31 windows. With no temperature effect, growth is therefore expected to average 1.65% a year, against the IMF's 2.26%. In the paper's world the background leaves out the part of those misses that the paper's own estimates put down to temperature shocks (0.9 of the 3.1 points on average), because its climate damage enters through the shocks since 2015 instead.
 - With no temperature effect, average growth 2026–2031 has a 10–90% range of 1.0% to 2.3% a year. This spread is the largest uncertainty in the contract, larger than the uncertainty in the temperature record.
 
@@ -149,7 +149,7 @@ Each term is open for comment until the freeze.
 
 ### 11. Resolution and settlement
 - **1 Oct 2032.** Retrieve the WDI series once, archive the response and its `lastupdated` field, and compute growth with the archived code.
-- If 2026 or 2031 is missing from that vintage, read the series again at the same time on the first business day of each following month, and resolve on the first vintage that has both years.
+- If 2026 or 2031 is missing from that version, read the series again at the same time on the first business day of each following month, and resolve on the first version that has both years.
 - If the indicator is discontinued, ForecastEx resolves the contracts under its event review (Rule 415).
 
 ### 12. Acknowledged limits
@@ -203,11 +203,11 @@ Each entry gives who would raise it, the answer, and whether the design addresse
 - The conditioning event is the resolution of ForecastEx's GT contracts for 2027 at the two range bounds (term 1). Conversion moves from a reading of NOAA's value on 31 January 2028 to GT's resolution, expected in mid-January 2028.
 - The GISTEMP fallback is dropped. If NOAA is late, conversion waits under GT's terms. GISTEMP takes its land and ocean data from NOAA and was delayed with it in 2019, so it would not cover a NOAA outage.
 - Growth is used unrounded. It was rounded to two decimals.
-- A missing year or a discontinued series goes to ForecastEx's event review (Rule 415). The contracts used to fall back on archived vintages or an official successor and were cancelled at cost otherwise.
+- A missing year or a discontinued series goes to ForecastEx's event review (Rule 415). The contracts used to fall back on archived versions or an official successor and were cancelled at cost otherwise.
 - The ranges, strikes and chances are unchanged.
 
 ## Changes on 5 Nov 2026
 - The contracts resolve on 1 October 2032, about three months after the World Bank's first estimate for 2031. They were to resolve a year later, on 1 October 2033, after the first round of revisions.
-- In the World Bank's archive of past WDI vintages, five-year growth for end years 2010–2024 read on 1 October of the following year differs from the reading a year later by 0.08 points a year on average. The earlier reading is 0.12 points a year from the current vintage (root mean square) and the later one 0.11 (`wdi_revisions.py`, `outputs/wdi_revisions.csv`).
-- The vintage current on 1 October of the following year has had the end year every year since 2011. It lacked the end year for 2003, 2008 and 2009, when the World Bank published later. A vintage that lacks either year now moves the reading to the first business day of each following month until a vintage has both. A discontinued series still goes to ForecastEx's event review (Rule 415).
+- In the World Bank's archive of past WDI versions, five-year growth for end years 2010–2024 read on 1 October of the following year differs from the reading a year later by 0.08 points a year on average. The earlier reading is 0.12 points a year from the current version (root mean square) and the later one 0.11 (`wdi_revisions.py`, `outputs/wdi_revisions.csv`).
+- The version current on 1 October of the following year has had the end year every year since 2011. It lacked the end year for 2003, 2008 and 2009, when the World Bank published later. A version that lacks either year now moves the reading to the first business day of each following month until a version has both. A discontinued series still goes to ForecastEx's event review (Rule 415).
 - The ranges, strikes and chances are unchanged.

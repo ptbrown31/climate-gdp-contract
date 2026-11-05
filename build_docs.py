@@ -250,7 +250,7 @@ def terms(x: R) -> str:
             ["Now to mid-Jan 2027", "Proposal circulates for comment. Indicative numbers refresh monthly, after NOAA's "
                                     "monthly release."],
             ["~Mid-Jan 2027", "NOAA publishes its 2026 annual value. At the final refresh the end year, conditions, "
-                              "strikes, IMF vintage and code are frozen and archived."],
+                              "strikes, IMF forecast and code are frozen and archived."],
             ["Right after", "**Conditional contracts list.**"],
             ["~Mar 2027", "NOAA publishes the winter (DJF) El Niño strength. Market prices can move on it, and the "
                           "terms stay fixed."],
@@ -258,7 +258,7 @@ def terms(x: R) -> str:
                               f"(listed for {gt_when(2027)}). **The matching condition converts; the other two are "
                               "refunded at cost.**"],
             [f"Mid-{x.end + 1}", f"World Bank publishes the first {x.end} figure."],
-            [f"**1 Oct {x.settle}**", "**Resolve and settle** on the WDI vintage of that date, about three months after "
+            [f"**1 Oct {x.settle}**", "**Resolve and settle** on the WDI version of that date, about three months after "
                                       "the first release."],
         ]),
         "",
@@ -293,7 +293,7 @@ def terms(x: R) -> str:
         "`NY.GDP.PCAP.PP.KD` (GDP per capita, PPP, constant 2021 international $) for country `WLD`.",
         series_reason(x),
         f"- **Growth = 100 × ln(y{x.end} / y{x.base}) / {x.span}**, with both levels from the single resolution-date "
-        "vintage, so PPP rebasings and level revisions cancel. Growth is used unrounded, and the contract "
+        "version, so PPP rebasings and level revisions cancel. Growth is used unrounded, and the contract "
         "resolves **Yes if growth is strictly greater than the strike.**",
         f"- This is average log growth. At these rates it is within 0.03 points of the compound annual rate.",
         f"- {x.base} is the last full year before listing, so none of the growth being measured ({x.base + 1}–{x.end}) "
@@ -318,8 +318,8 @@ def terms(x: R) -> str:
         "### 4. Shock definition",
         f"- `s_t = T_t − ({x.ham['coef'][0]:.6f} + {x.ham['coef'][1]:.6f}·T_(t−2) + {x.ham['coef'][2]:.6f}·T_(t−3))`.",
         f"  - These are the Hamilton h=2, p=2 coefficients fitted on NOAA over the paper's own window (dependent years "
-        f"{x.ham['fit_years'][0]}–{x.ham['fit_years'][1]}, data from 1950; paper footnote 2), on the archived 17 Oct "
-        "2026 annual vintage. The coefficients are frozen, so the 2023–27 warmth is measured out of sample, against a "
+        f"{x.ham['fit_years'][0]}–{x.ham['fit_years'][1]}, data from 1950; paper footnote 2), on the annual series "
+        "archived on 17 Oct 2026. The coefficients are frozen, so the 2023–27 warmth is measured out of sample, against a "
         "trend fitted without it.",
         f"  - Refitting through 2025 would shrink each 2023–27 shock by about 0.04–0.05 °C (gap "
         f"{m(abs(x.v('filter: refit through 2025 (until 30 Oct 2026)').mean_shift))} points, J "
@@ -357,7 +357,7 @@ def terms(x: R) -> str:
         + and_list([f"{x.bl['growth_pp'][str(y)]:.2f}% in {y}" for y in range(x.base + 1, x.end + 1)])
         + f", a **mean of {x.bl['window_mean_pp']:.2f}% a year** (the 2000–2019 average was {x.frozen['mu_pp']:.2f}%). "
         "Beyond 2031 the 2031 rate is held.",
-        "- The baseline stays frozen at the October 2026 vintage, because the January 2027 WEO Update usually appears "
+        "- The baseline stays frozen at the October 2026 WEO, because the January 2027 WEO Update usually appears "
         "after mid-January and projects only two years.",
         "- The **spread** comes from the IMF's own historical forecast errors for world real GDP growth by years ahead. "
         "They are resampled as whole forecast paths so that multi-year misses (recessions, slowdowns) keep their "
@@ -416,8 +416,8 @@ def terms(x: R) -> str:
         "### 11. Resolution and settlement",
         f"- **1 Oct {x.settle}.** Retrieve the WDI series once, archive the response and its `lastupdated` field, and "
         "compute growth with the archived code.",
-        f"- If {x.base} or {x.end} is missing from that vintage, read the series again at the same time on the first "
-        "business day of each following month, and resolve on the first vintage that has both years.",
+        f"- If {x.base} or {x.end} is missing from that version, read the series again at the same time on the first "
+        "business day of each following month, and resolve on the first version that has both years.",
         "- If the indicator is discontinued, ForecastEx resolves the contracts under its event review (Rule 415).",
         "",
         "### 12. Acknowledged limits",
@@ -489,24 +489,24 @@ def terms(x: R) -> str:
         "and ocean data from NOAA and was delayed with it in 2019, so it would not cover a NOAA outage.",
         "- Growth is used unrounded. It was rounded to two decimals.",
         "- A missing year or a discontinued series goes to ForecastEx's event review (Rule 415). The contracts used to "
-        "fall back on archived vintages or an official successor and were cancelled at cost otherwise.",
+        "fall back on archived versions or an official successor and were cancelled at cost otherwise.",
         "- The ranges, strikes and chances are unchanged.",
         "",
         "## Changes on 5 Nov 2026",
         f"- The contracts resolve on 1 October {x.settle}, about three months after the World Bank's first estimate "
         f"for {x.end}. They were to resolve a year later, on 1 October {x.settle + 1}, after the first round of "
         "revisions.",
-        f"- In the World Bank's archive of past WDI vintages, five-year growth for end years "
+        f"- In the World Bank's archive of past WDI versions, five-year growth for end years "
         f"{x.wdi['revision_end_years'][0]}–{x.wdi['revision_end_years'][1]} read on 1 October of the following year "
         f"differs from the reading a year later by {x.wdi['mean_abs_diff']:.2f} points a year on average. The earlier "
-        f"reading is {x.wdi['rms_1oct_next_vs_latest']:.2f} points a year from the current vintage (root mean square) "
+        f"reading is {x.wdi['rms_1oct_next_vs_latest']:.2f} points a year from the current version (root mean square) "
         f"and the later one {x.wdi['rms_1oct_second_vs_latest']:.2f} (`wdi_revisions.py`, "
         "`outputs/wdi_revisions.csv`).",
-        f"- The vintage current on 1 October of the following year has had the end year every year since "
+        f"- The version current on 1 October of the following year has had the end year every year since "
         f"{x.wdi['found_on_1oct_every_year_since']}. It lacked the end year for "
-        f"{and_list([str(y) for y in x.wdi['missing_on_1oct_next']])}, when the World Bank published later. A vintage "
+        f"{and_list([str(y) for y in x.wdi['missing_on_1oct_next']])}, when the World Bank published later. A version "
         "that lacks either year now moves the reading to the first business day of each following month until a "
-        "vintage has both. A discontinued series still goes to ForecastEx's event review (Rule 415).",
+        "version has both. A discontinued series still goes to ForecastEx's event review (Rule 415).",
         "- The ranges, strikes and chances are unchanged.",
         "",
     ]
@@ -591,9 +591,9 @@ def series_reason(x: R) -> str:
 
 
 def gdp_provisions(x: R, lead: str = "If") -> str:
-    return (f"{lead} the vintage current at the Resolution Time has no value for {x.base} or {x.end}, the Resolution "
-            f"Time moves to {READ_CT} on the first business day of the next month, and so on each month until the "
-            "vintage current at that time has both years. If the World Bank has discontinued the series, ForecastEx "
+    return (f"{lead} the WDI version current at the Resolution Time has no value for {x.base} or {x.end}, the "
+            f"Resolution Time moves to {READ_CT} on the first business day of the next month, and so on each month until "
+            "the version current at that time has both years. If the World Bank has discontinued the series, ForecastEx "
             "resolves the contract under its event review (Rule 415).")
 
 
@@ -604,14 +604,14 @@ def gdp_fields(x: R, thr: str) -> dict[str, str]:
         "Instructions":
             f"The World Bank updates its World Development Indicators (WDI) several times a year. Its first estimate "
             f"of world GDP per capita for {x.end} usually appears in mid-{x.end + 1}. This contract resolves on the "
-            f"vintage current on 1 October {x.settle}, about three months later, with both years read from that one "
-            "vintage. This contract is not subject to early Resolution.",
+            f"WDI version current on 1 October {x.settle}, about three months later, with both years read from that "
+            "one version. This contract is not subject to early Resolution.",
         "Underlying":
             f"Average annual growth of world GDP per capita from {x.base} to {x.end}, computed as 100 × ln(GDP per "
             f"capita in {x.end} ÷ GDP per capita in {x.base}) ÷ {x.span} and not rounded. GDP per capita "
             "is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World "
             f"aggregate (code WLD), available at {WDI_API} (the indicator's page, {WDI_PAGE}, shows the same series). Both "
-            "years come from the WDI vintage current at the Resolution "
+            "years come from the WDI version current at the Resolution "
             "Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. "
             f"The contract resolves Yes if growth is strictly greater than {thr}% a year, and No otherwise. No other "
             "GDP series, estimate or projection is used. Links are given for information; the Source Agency may "
@@ -689,7 +689,7 @@ def terms_timeline(x: R) -> str:
                               f"Conditional positions in the matching range convert into {CODE}, and the other two ranges "
                               "are refunded at cost."],
         [f"Mid-{x.end + 1}", f"The World Bank publishes its first estimate for {x.end}."],
-        [f"1 October {x.settle}", "Resolution on the WDI vintage current that day, then settlement."],
+        [f"1 October {x.settle}", "Resolution on the WDI version current that day, then settlement."],
     ])
 
 
@@ -1073,12 +1073,12 @@ def memo(x: R) -> str:
              "Baseline per-capita growth"],
             ["Spread of background growth", "IMF historical WEO forecasts (pending), with a stand-in from WDI `NY.GDP.PCAP.KD`, "
              "1960–2025" if x.stand_in else "IMF Historical WEO Forecasts Database (`WEOhistorical.xlsx`, sheet "
-             f"`ngdp_rpch`), October vintages {x.err['first_vintage']}–{x.err['last_vintage']}",
+             f"`ngdp_rpch`), October WEOs {x.err['first_vintage']}–{x.err['last_vintage']}",
              "Forecast-error paths, including the average miss"],
             ["IRF and shocks", "`dkaenzig/micc_replication`; `dkaenzig/global-temperature-shocks`", "Response, validation"],
         ]),
         "",
-        "The vintages are recorded in `outputs/results.json → vintages`.",
+        "Each download's address, time and checksum are recorded in `outputs/results.json → vintages`.",
         "",
         "## 3. Temperature shocks",
         "",
