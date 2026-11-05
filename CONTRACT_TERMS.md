@@ -45,6 +45,7 @@ Each term is open for comment until the freeze.
 
 ### 2. Settlement event
 - The settlement event is world GDP per capita growth from 2026 to 2031, measured with World Bank WDI `NY.GDP.PCAP.PP.KD` (GDP per capita, PPP, constant 2021 international $) for country `WLD`.
+- The contract settles on the series that most closely follows the paper's GDP data among those published in time to settle it. The paper's estimate is fitted on the Penn World Table's world GDP per capita, whose releases lag several years. Of the World Bank's series, the PPP series tracks it most closely, with five-year average growth 0.20 points a year apart (root mean square over windows ending 1995–2019). The World Bank's published growth rate, `NY.GDP.PCAP.KD.ZG`, measures growth in constant 2015 dollars at market exchange rates and sits 0.37 points apart. The paper's own check on that constant-dollar series (its App. Fig. B.11) gives very similar estimates.
 - **Growth = 100 × ln(y2031 / y2026) / 5**, with both levels from the single resolution-date vintage, so PPP rebasings and level revisions cancel. Growth is used unrounded, and the contract resolves **Yes if growth is strictly greater than the strike.**
 - This is average log growth. At these rates it is within 0.03 points of the compound annual rate.
 - 2026 is the last full year before listing, so none of the growth being measured (2027–2031) is known when the contracts list.

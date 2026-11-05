@@ -455,6 +455,21 @@
       "max_abs_diff": 0.12824599410788534,
       "sd_a": 0.11838793021555219,
       "sd_b": 0.1303801177093283
+    },
+    "settlement_series_vs_paper_gdp": {
+      "windows_ending": [
+        1995,
+        2019
+      ],
+      "n_windows": 25,
+      "rms_5y_pwt_minus_ppp": 0.19843566836106968,
+      "mean_5y_pwt_minus_ppp": -0.08010263749711202,
+      "rms_5y_pwt_minus_usd": 0.3701441801597041,
+      "mean_5y_pwt_minus_usd": 0.21561606616610007,
+      "corr_annual_pwt_ppp": 0.972637104475007,
+      "corr_annual_pwt_usd": 0.9427705433138324,
+      "rms_annual_authors_wdi_minus_usd": 0.10418913342576278,
+      "corr_annual_authors_wdi_usd": 0.9971449105295253
     }
   },
   "event_shocks": [
@@ -837,7 +852,7 @@
       "M_rms": 8.187513978425972
     }
   ],
-  "refreshed_utc": "2026-11-05T11:10:37+00:00",
+  "refreshed_utc": "2026-11-05T18:11:09+00:00",
   "contract_primary": {
     "threshold": -5.871316225805755,
     "threshold_pct_level": -5.702278817719386,

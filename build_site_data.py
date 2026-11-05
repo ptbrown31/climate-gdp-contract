@@ -233,6 +233,7 @@ def main():
     djf_oni = oni[oni.season == "DJF"].set_index("year")["anom"]
     bands = A.annual_bands(prim)
     t26c = min(res["threshold_grid"]["T2026_values"], key=lambda v: abs(v - ctx.T26[0]))
+    authors_shocks = pd.read_csv(ROOT / "outputs/shocks.csv", index_col="year")["bk_published_pwt_shock"].dropna()
     model = {
         "schema": 1,
         "written": pd.Timestamp.now(tz="UTC").isoformat(timespec="seconds"),
@@ -295,7 +296,11 @@ def main():
             "trendStartScan": res["trend_start_scan"],
             "t27Grid": {"T2026": t26c, "rows": [{k: r[k] for k in ("T2027", "s2027", "mean_shift", "threshold_growth_pp",
                                                                  "sensitivity", "false_positive", "youden_j")}
-                                                for r in res["threshold_grid"]["rows"] if r["T2026"] == t26c]}},
+                                                for r in res["threshold_grid"]["rows"] if r["T2026"] == t26c]},
+            # Fig. 2a: the authors' published shocks beside the run's, and the 2026-27 estimates
+            "shocks": {"authors": {str(int(t)): round(float(v), 6) for t, v in authors_shocks.items()},
+                       "events": {str(e["year"]): {"shock": round(e["shock"], 6), "sd": round(e["shock_sd"], 6)}
+                                  for e in res["event_shocks"] if e["year"] > A.ANCHOR}}},
         "ladder": {"strikes": LADDER, "lists": "mid-January 2027", "symbol": None,
                    "note": "the article's contract; the exchange's own strikes replace it when it lists"},
         "code": {"repo": REPO, "paper": "https://doi.org/10.1093/qje/qjag011",

@@ -291,6 +291,7 @@ def terms(x: R) -> str:
         "### 2. Settlement event",
         f"- The settlement event is world GDP per capita growth from {x.base} to {x.end}, measured with World Bank WDI "
         "`NY.GDP.PCAP.PP.KD` (GDP per capita, PPP, constant 2021 international $) for country `WLD`.",
+        series_reason(x),
         f"- **Growth = 100 × ln(y{x.end} / y{x.base}) / {x.span}**, with both levels from the single resolution-date "
         "vintage, so PPP rebasings and level revisions cancel. Growth is used unrounded, and the contract "
         "resolves **Yes if growth is strictly greater than the strike.**",
@@ -573,6 +574,20 @@ def rng_text(b: dict) -> str:
 def restrict(agencies: str) -> str:
     return (f"Under ForecastEx Rule 509(h), no one may trade this contract who has material non-public information "
             f"about it, is an employee of {agencies}, or has any direct or indirect influence over its outcome.")
+
+
+def series_reason(x: R) -> str:
+    """Why the contract settles on WDI's PPP series: of the series published in time, it follows the paper's data most closely."""
+    v = x.r["validation"]["settlement_series_vs_paper_gdp"]
+    a, b = v["windows_ending"]
+    return ("- The contract settles on the series that most closely follows the paper's GDP data among those "
+            "published in time to settle it. The paper's estimate is fitted on the Penn World Table's world GDP per "
+            "capita, whose releases lag several years. Of the World Bank's series, the PPP series tracks it most "
+            f"closely, with five-year average growth {v['rms_5y_pwt_minus_ppp']:.2f} points a year apart (root mean "
+            f"square over windows ending {a}–{b}). The World Bank's published growth rate, `NY.GDP.PCAP.KD.ZG`, "
+            "measures growth in constant 2015 dollars at market exchange rates and sits "
+            f"{v['rms_5y_pwt_minus_usd']:.2f} points apart. The paper's own check on that constant-dollar series "
+            "(its App. Fig. B.11) gives very similar estimates.")
 
 
 def gdp_provisions(x: R, lead: str = "If") -> str:

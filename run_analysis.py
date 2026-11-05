@@ -103,6 +103,27 @@ def spec_condition(lower: float, upper: float) -> str:
     return f"{lo:.2f} to {hi:.2f} C"
 
 
+def series_against_paper(pwt_ts: pd.DataFrame, wdi_ppp: pd.Series, wdi_usd: pd.Series,
+                         first: int = 1995, last: int = 2019) -> dict:
+    """How closely each World Bank series follows the Penn World Table's world GDP per capita, the outcome
+    the paper's time-series estimate was fitted on. Five-year average growth for windows ending first..last,
+    in log points a year, for the PPP series the contract settles on and for the constant-dollar series at
+    market exchange rates behind the World Bank's published growth rate (NY.GDP.PCAP.KD.ZG). The authors'
+    own World Bank series (their App. Fig. B.11) is compared with the constant-dollar series."""
+    g = pd.DataFrame({"pwt": pwt_ts["lnrgdppc_world_pwt"].diff(), "authors_wdi": pwt_ts["lnrgdppc_world_wdi"].diff(),
+                      "ppp": 100 * np.log(wdi_ppp).diff(), "usd": 100 * np.log(wdi_usd).diff()}).astype(float)
+    f5 = g.rolling(5).mean().loc[first:last]
+    ann = g.loc[first - 4:last]
+    rms = lambda d: float(np.sqrt((d.dropna() ** 2).mean()))  # noqa: E731
+    old = g.loc[1961:last]
+    return {"windows_ending": [first, last], "n_windows": int(f5.pwt.notna().sum()),
+            "rms_5y_pwt_minus_ppp": rms(f5.pwt - f5.ppp), "mean_5y_pwt_minus_ppp": float((f5.pwt - f5.ppp).mean()),
+            "rms_5y_pwt_minus_usd": rms(f5.pwt - f5.usd), "mean_5y_pwt_minus_usd": float((f5.pwt - f5.usd).mean()),
+            "corr_annual_pwt_ppp": float(ann.pwt.corr(ann.ppp)), "corr_annual_pwt_usd": float(ann.pwt.corr(ann.usd)),
+            "rms_annual_authors_wdi_minus_usd": rms(old.authors_wdi - old.usd),
+            "corr_annual_authors_wdi_usd": float(old.authors_wdi.corr(old.usd))}
+
+
 def paper_checks(ctx, D) -> dict:
     """Numbers behind the anticipated objections in MEMO.md: how the prediction moves with the paper's
     own alternative data and shock choices, and how much of the IMF's past misses the paper's estimates
@@ -210,6 +231,7 @@ def main(refresh: bool = False):
         "paper_eq1_convention_vs_authors": TM.compare(
             H.shocks(H.fit(pwt_ts["gtmpanom_bkly_aw"].dropna(), 2, 2, convention="paper_eq1"),
                      pwt_ts["gtmpanom_bkly_aw"].dropna()), pwt_ts["gtmp_bkly_aw_dtfe2"].dropna()),
+        "settlement_series_vs_paper_gdp": series_against_paper(pwt_ts, ctx.wdi, ctx.wdi_usd),
     }
 
     filt = ctx.filters["PWT"]
