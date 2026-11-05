@@ -47,8 +47,8 @@ def build(r: dict) -> list[dict]:
     sens, sens_w = var["primary"]["sensitivity"], var["IRF: draws widened by half"]["sensitivity"]
     refit = v("filter: refit through 2025 (until 30 Oct 2026)")
     raw_bg = v("paper's world: raw IMF misses (no netting)")
-    noaa = v("IRF: re-estimated with NOAA temperature (paper App. B.11)")
-    wdi = v("IRF: re-estimated on WDI world GDP (paper App. B.11)")
+    noaa = v("IRF: time series re-estimated with NOAA temperature")
+    wdi = v("IRF: time series re-estimated on WDI world GDP at market exchange rates")
     frozen = v("baseline: frozen 2000-2019 drift (until 30 Oct 2026)")
     rawsh = v("composition: raw shocks (handoff formula)")
     trans = v("IRF: transitory warmth only (Sims)")
@@ -81,14 +81,16 @@ def build(r: dict) -> list[dict]:
                    f"the gap would be {_m(abs(raw_bg[0]))} points and the contract would overstate its chance of resolving "
                    f"the paper's way."},
         {"side": PAPER, "status": ADDRESSED,
-         "objection": "The contract uses NOAA temperatures and World Bank GDP where the paper uses Berkeley Earth and "
-                      "the Penn World Table.",
-         "answer": f"The paper reports similar results with NOAA, NASA and World Bank data (App. Fig. B.11), and says its "
-                   f"Berkeley Earth measure tracks NOAA almost perfectly. Re-estimating the paper's world-GDP response "
-                   f"with NOAA temperature gives {_m(th['PWT_ts_noaa'])}% at year 6 (the paper's is {_m(th['PWT_ts'])}%), "
-                   f"and with World Bank GDP {_m(th['PWT_ts_wdi'])}%. The cutoffs become {noaa[1]:.2f}% and "
-                   f"{wdi[1]:.2f}%, against {cut:.2f}%. The Penn World Table cannot settle the contract, because its "
-                   "releases lag several years."},
+         "objection": "The contract uses NOAA temperatures and World Bank GDP where the estimate it tests uses Berkeley "
+                      "Earth and the Penn World Table.",
+         "answer": f"The paper reports similar results with NOAA, NASA and World Bank data in its country panel (App. "
+                   f"Fig. B.11), and says its Berkeley Earth measure tracks NOAA almost perfectly. It does not report "
+                   f"its world time series with these data. Re-estimating that series with the authors' NOAA data "
+                   f"gives {_m(th['PWT_ts_noaa'])}% at year 6 (the paper's is {_m(th['PWT_ts'])}%), and with their "
+                   f"World Bank data, at market exchange rates, {_m(th['PWT_ts_wdi'])}%. The cutoffs become "
+                   f"{noaa[1]:.2f}% and {wdi[1]:.2f}%, against {cut:.2f}%. ForecastEx's GT contracts resolve on NOAA. "
+                   "The Penn World Table cannot settle the contract, because its releases lag several years. Its "
+                   "version 11.0, of October 2025, ends in 2023."},
         {"side": PAPER, "status": CAVEAT,
          "objection": "The growth period ends before the El Niño's full effect.",
          "answer": f"The paper's response peaks six years after a shock, after {end} for the 2027 shock. The end year is "

@@ -104,8 +104,10 @@ def load_irfs(bk_dir: Path, nboot: int = 4000, seed: int = 123) -> dict[str, IRF
                                         "Response to a one-year +1 C temperature deviation (paper App. B.4).")
         if key == "PWT_ts":
             corr_pwt = np.corrcoef(D.T)
-    # the paper's App. Fig. B.11 data choices in the time series: NOAA temperature (h=2 p=2 shocks fitted
-    # on 1950-2022, as for Berkeley Earth) and WDI world GDP, everything else as in the PWT spec
+    # the data choices the paper checks in its country panel (App. Fig. B.11), applied here to the world time
+    # series, which the paper does not report with them: NOAA temperature (h=2 p=2 shocks fitted on 1950-2022,
+    # as for Berkeley Earth) and the authors' WDI world GDP (market exchange rates), everything else as in the
+    # PWT spec
     noaa = bu["gtmp_noaa_aw"].dropna().loc[1950:]
     alt = pwt.copy()
     alt["gtmp_noaa_aw_h2p2s"] = H.shocks(H.fit(noaa, 2, 2, end=2022), noaa)
@@ -116,7 +118,7 @@ def load_irfs(bk_dir: Path, nboot: int = 4000, seed: int = 123) -> dict[str, IRF
         g = lp.lp_irf(alt, spec)
         D = lp.recentre(lp.wild_bootstrap_irf(alt, spec, nboot=nboot, seed=seed), g.b.values)
         irfs[key] = IRF(key, g.b.values, D, g.se.values, None, shockdef,
-                        "PWT time-series LP with one data choice from the paper's App. Fig. B.11; "
+                        "PWT time-series LP with one data choice the paper checks in its panel (App. Fig. B.11); "
                         "wild-bootstrap draws re-centred on the point estimate.")
     # Panel (paper Fig. IV, the headline 14% / 18%): point + 95% band only
     rng = np.random.default_rng(seed + 1)

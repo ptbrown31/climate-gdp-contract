@@ -2,8 +2,8 @@ group,label,bin,drift_pp,threshold_growth_pp,sensitivity,false_positive,youden_j
 Published,Published design,,2.2630,1.0887,0.8124,0.1276,0.6848,0.9103,0.8683,0.1838
 The paper’s estimate,"Country panel, every country weighted equally (Fig. IV)",,2.2630,1.0805,0.8230,0.1248,0.6982,0.9160,0.8683,0.1701
 The paper’s estimate,"Country panel, weighted by GDP (App. Fig. B.10)",,2.2630,1.1956,0.7570,0.1739,0.5831,0.8595,0.8683,0.2915
-The paper’s estimate,Re-estimated with NOAA temperature (App. Fig. B.11),,2.2630,1.1030,0.8092,0.1327,0.6764,0.9056,0.8683,0.1920
-The paper’s estimate,Re-estimated on World Bank GDP (App. Fig. B.11),,2.2630,1.0631,0.8607,0.1187,0.7420,0.9366,0.8683,0.1275
+The paper’s estimate,Re-estimated with NOAA temperature,,2.2630,1.1030,0.8092,0.1327,0.6764,0.9056,0.8683,0.1920
+The paper’s estimate,Re-estimated on World Bank GDP at market exchange rates,,2.2630,1.0631,0.8607,0.1187,0.7420,0.9366,0.8683,0.1275
 The paper’s estimate,"Barro–Ursúa data from 1860, time series",,2.2630,1.1854,0.6010,0.1686,0.4324,0.7603,0.8683,0.4388
 The paper’s estimate,Barro–Ursúa country panel,,2.2630,1.1531,0.5846,0.1538,0.4307,0.7458,0.8683,0.4393
 The paper’s estimate,Transitory part of each shock only (App. B.4),,2.2630,1.2967,0.6317,0.2291,0.4026,0.7526,0.8683,0.4932

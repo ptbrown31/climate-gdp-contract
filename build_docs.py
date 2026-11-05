@@ -586,8 +586,8 @@ def series_reason(x: R) -> str:
             f"closely, with five-year average growth {v['rms_5y_pwt_minus_ppp']:.2f} points a year apart (root mean "
             f"square over windows ending {a}–{b}). The World Bank's published growth rate, `NY.GDP.PCAP.KD.ZG`, "
             "measures growth in constant 2015 dollars at market exchange rates and sits "
-            f"{v['rms_5y_pwt_minus_usd']:.2f} points apart. The paper's own check on that constant-dollar series "
-            "(its App. Fig. B.11) gives very similar estimates.")
+            f"{v['rms_5y_pwt_minus_usd']:.2f} points apart. The paper's country panel gives very similar estimates "
+            "with World Bank data (its App. Fig. B.11).")
 
 
 def gdp_provisions(x: R, lead: str = "If") -> str:

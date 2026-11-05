@@ -852,7 +852,7 @@
       "M_rms": 8.187513978425972
     }
   ],
-  "refreshed_utc": "2026-11-05T18:11:09+00:00",
+  "refreshed_utc": "2026-11-05T22:09:50+00:00",
   "contract_primary": {
     "threshold": -5.871316225805755,
     "threshold_pct_level": -5.702278817719386,
@@ -1815,7 +1815,7 @@
       "fpr_at_primary_c": 0.12758
     },
     {
-      "variant": "IRF: re-estimated with NOAA temperature (paper App. B.11)",
+      "variant": "IRF: time series re-estimated with NOAA temperature",
       "drift_pp": 2.2629632355118177,
       "mean_shift": -5.946276185910093,
       "sd_h0": 2.623732267417766,
@@ -1831,7 +1831,7 @@
       "fpr_at_primary_c": 0.12758
     },
     {
-      "variant": "IRF: re-estimated on WDI world GDP (paper App. B.11)",
+      "variant": "IRF: time series re-estimated on WDI world GDP at market exchange rates",
       "drift_pp": 2.2629632355118177,
       "mean_shift": -6.520444408859404,
       "sd_h0": 2.623732267417766,
@@ -2249,7 +2249,7 @@
       },
       {
         "group": "The paper\u2019s estimate",
-        "label": "Re-estimated with NOAA temperature (App. Fig. B.11)",
+        "label": "Re-estimated with NOAA temperature",
         "bin": null,
         "settings": {
           "t27": "forecast",
@@ -2266,7 +2266,7 @@
       },
       {
         "group": "The paper\u2019s estimate",
-        "label": "Re-estimated on World Bank GDP (App. Fig. B.11)",
+        "label": "Re-estimated on World Bank GDP at market exchange rates",
         "bin": null,
         "settings": {
           "t27": "forecast",
