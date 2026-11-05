@@ -57,13 +57,15 @@ Download each IMF file from its source in the table into the folder shown.
 
 The public-domain and CC BY series (NOAA, NASA GISTEMP, the Oceanic Niño indices, World Bank WDI)
 are in `data/raw/` as the published run downloaded them, each with its `vintage.json` (address,
-time and SHA-256). Anything missing is downloaded on first use.
+time and SHA-256). `data/raw/wdi_archive/` holds the World Bank's archived WDI vintages of the
+world series, which `wdi_revisions.py` reads. Anything missing is downloaded on first use.
 
 **2. Commands.**
 
     python -I run_analysis.py            # reproduces outputs/ from the data as committed (a few minutes)
     python -I run_analysis.py --refresh  # downloads every public series again, then runs
     python -I build_site_data.py         # the page's model files, in site_tab/data/elnino/
+    python -I wdi_revisions.py           # the WDI archive check behind the resolution date
     python -I -m pytest tests -q
 
 `outputs/` holds the published run's results (`results.json` and the tables), so they can be read
@@ -84,6 +86,7 @@ without running anything. To see the page locally with the public site's styles,
 | `bk_elnino/objections.py` | The objections we expect, with answers built from `results.json` |
 | `run_analysis.py`, `build_docs.py` | The run; `MEMO.md`, `CONTRACT_TERMS.md` and the listing terms in `terms/` from its outputs |
 | `build_site_data.py`, `build_site_article.py` | The page's model files and text |
+| `wdi_revisions.py` | When the World Bank's first estimate appears and how much it moves after, from its archive of past WDI vintages (`outputs/wdi_revisions.*`) |
 | `site_tab/` | The page's HTML, CSS, model (`js/elnino-model.js`) and figures (`js/climate-gdp.js`) |
 | `docs/article_v2/make_figures.py` | The article's static figures |
 | `tests/` | Unit tests, the replication checks, and the page-model check |

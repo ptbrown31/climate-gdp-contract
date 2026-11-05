@@ -1,6 +1,6 @@
 # World GDP per Capita Growth (WGDPC): Contract Terms and Conditions
 
-*Draft for comment, 2026-10-31. Proposed by Patrick T. Brown for listing on ForecastEx, in the layout of ForecastEx's published contract terms; ForecastEx sets the final wording, product codes, listings and thresholds. The end year, the thresholds and the chances are indicative and refresh monthly with the analysis until the terms freeze in mid-January 2027.*
+*Draft for comment, 2026-11-05. Proposed by Patrick T. Brown for listing on ForecastEx, in the layout of ForecastEx's published contract terms; ForecastEx sets the final wording, product codes, listings and thresholds. The end year, the thresholds and the chances are indicative and refresh monthly with the analysis until the terms freeze in mid-January 2027.*
 
 ## Proposed terms
 
@@ -10,7 +10,7 @@
 
 **Product Code:** WGDPC (proposed; ForecastEx assigns product codes).
 
-**Instructions:** The World Bank updates its World Development Indicators (WDI) several times a year. Its first estimate of world GDP per capita for 2031 usually appears in mid-2032, and revisions follow. This contract resolves on the vintage current on 1 October 2033, about one revision cycle later, with both years read from that one vintage. This contract is not subject to early Resolution.
+**Instructions:** The World Bank updates its World Development Indicators (WDI) several times a year. Its first estimate of world GDP per capita for 2031 usually appears in mid-2032. This contract resolves on the vintage current on 1 October 2032, about three months later, with both years read from that one vintage. This contract is not subject to early Resolution.
 
 **Underlying:** Average annual growth of world GDP per capita from 2026 to 2031, computed as 100 × ln(GDP per capita in 2031 ÷ GDP per capita in 2026) ÷ 5 and not rounded. GDP per capita is the WDI series NY.GDP.PCAP.PP.KD (GDP per capita, PPP, constant 2021 international $) for the World aggregate (code WLD), available at https://api.worldbank.org/v2/country/WLD/indicator/NY.GDP.PCAP.PP.KD?format=json&per_page=500 (the indicator's page, https://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD?locations=1W, shows the same series). Both years come from the WDI vintage current at the Resolution Time, so a revision of levels or a new price-comparison (PPP) base that moves both years cancels out. The contract resolves Yes if growth is strictly greater than [##]% a year, and No otherwise. No other GDP series, estimate or projection is used. Links are given for information; the Source Agency may publish the data elsewhere.
 
@@ -30,9 +30,9 @@
 
 **Incentive Coupon:** Positions earn ForecastEx's monthly incentive coupon, based on the contract's daily settlement value, at no less than the minimum rate set in ForecastEx Rule 612(c).
 
-**Resolution Time:** 1 October 2033, 10:00 AM CT (proposed). The WDI series is read once at that time; the response, its lastupdated date and the growth computed from it are published with these terms.
+**Resolution Time:** 1 October 2032, 10:00 AM CT (proposed). The WDI series is read once at that time; the response, its lastupdated date and the growth computed from it are published with these terms.
 
-**Changes in Resolution Time:** ForecastEx's standard provisions apply. If the Source Agency delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay Resolution. ForecastEx posts a public notice in each case. If the vintage current at the Resolution Time has no value for 2026 or 2031, or the World Bank has discontinued the series, ForecastEx resolves the contract under its event review (Rule 415).
+**Changes in Resolution Time:** ForecastEx's standard provisions apply. If the Source Agency delays the data, Resolution waits for them; if it changes its release schedule, ForecastEx may move the Resolution Time to match; and ForecastEx may open its event review under Rule 415, which can delay Resolution. ForecastEx posts a public notice in each case. If the vintage current at the Resolution Time has no value for 2026 or 2031, the Resolution Time moves to 10:00 AM CT on the first business day of the next month, and so on each month until the vintage current at that time has both years. If the World Bank has discontinued the series, ForecastEx resolves the contract under its event review (Rule 415).
 
 **Expiration Time:** Same as the Resolution Time.
 
@@ -78,8 +78,8 @@ With no temperature effect, average growth from 2026 to 2031 has a median of 1.6
 | Mid-January 2027 | NOAA publishes its 2026 annual value and the terms freeze. The plain contract (WGDPC) and the conditional contracts (ZGTWGDPC) list. |
 | Mid-January 2028 | NOAA publishes its 2027 value, and ForecastEx's GT 2027 contracts resolve on it. Conditional positions in the matching range convert into WGDPC, and the other two ranges are refunded at cost. |
 | Mid-2032 | The World Bank publishes its first estimate for 2031. |
-| 1 October 2033 | Resolution on the WDI vintage current that day, then settlement. |
+| 1 October 2032 | Resolution on the WDI vintage current that day, then settlement. |
 
 ### Data and code
 
-Every number here comes from the analysis's latest run (outputs/results.json, 2026-10-31), and build_docs.py rewrites these terms from it at each monthly refresh until the freeze. The code, the published run and its data are at https://github.com/ptbrown31/climate-gdp-contract. The contract's page, https://weather.weatherclimatehumansystems.org/climate-gdp.html, re-runs the model in the browser with its main assumptions on controls. CONTRACT_TERMS.md sets out the full design, the reason for each choice and the objections we expect.
+Every number here comes from the analysis's latest run (outputs/results.json, 2026-11-05), and build_docs.py rewrites these terms from it at each monthly refresh until the freeze. The code, the published run and its data are at https://github.com/ptbrown31/climate-gdp-contract. The contract's page, https://weather.weatherclimatehumansystems.org/climate-gdp.html, re-runs the model in the browser with its main assumptions on controls. CONTRACT_TERMS.md sets out the full design, the reason for each choice and the objections we expect.

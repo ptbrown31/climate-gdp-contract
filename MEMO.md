@@ -227,7 +227,7 @@ The full terms are in `CONTRACT_TERMS.md`.
 - NOAA publishes its 2026 annual value ~mid-Jan 2027. The final refresh follows, the terms freeze and the **conditional contracts list**.
 - NOAA publishes the DJF 2027 RONI ~Mar 2027. Market prices can move on it, and the terms stay fixed.
 - NOAA publishes its 2027 annual value ~mid-Jan 2028. **The matching condition converts and the others are refunded.**
-- The first WDI 2031 figure appears mid-2032, and **resolution is 1 Oct 2033**.
+- The first WDI 2031 figure appears mid-2032, and **resolution is 1 Oct 2032**.
 
 **Open questions**
 - A low-power clause or no-decision zone for the cool condition (J 0.63)?

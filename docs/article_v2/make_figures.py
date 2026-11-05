@@ -430,12 +430,12 @@ def fig_timeline(base, end):
     def d(y, m):
         return y + (m - 1) / 12
 
-    settle = end + 2
+    settle = end + 1
     rows = [
         ("Open for comment;\nestimates updated monthly", d(2026, 10), d(2027, 1.5), ORANGE, ""),
         ("Conditional contracts\ntrade", d(2027, 1.5), d(2028, 1.5), P.AQUA, ""),
         ("Growth period measured", d(base + 1, 1), d(end + 1, 1), BLUE, ", ".join(str(y) for y in range(base + 1, end + 1))),
-        ("World Bank publishes\nand revises the data", d(end + 1, 7), d(settle, 10), INK2, ""),
+        (f"World Bank publishes\nits {end} estimate", d(end + 1, 7), d(settle, 10), INK2, ""),
     ]
     fig, ax = plt.subplots(figsize=(7.0, 3.4))
     for i, (lab, a, b, col, inside) in enumerate(rows):

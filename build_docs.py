@@ -68,7 +68,8 @@ class R:
         d = r["design_primary"]
         self.base, self.end = d["base_year"], d["window"][1]
         self.span = self.end - self.base
-        self.settle = self.end + 2
+        self.settle = self.end + 1                                     # 1 October, ~3 months after the first estimate
+        self.wdi = json.loads((OUT / "wdi_revisions.json").read_text())["summary"]   # from wdi_revisions.py
         self.c = r["contract_primary"]
         self.bins = r["conditional_contracts"]["bins"]
         self.ladder = pd.DataFrame(r["conditional_contracts"]["ladder"])
@@ -257,7 +258,7 @@ def terms(x: R) -> str:
                               f"(listed for {gt_when(2027)}). **The matching condition converts; the other two are "
                               "refunded at cost.**"],
             [f"Mid-{x.end + 1}", f"World Bank publishes the first {x.end} figure."],
-            [f"**1 Oct {x.settle}**", "**Resolve and settle** on the WDI vintage of that date, one revision cycle after "
+            [f"**1 Oct {x.settle}**", "**Resolve and settle** on the WDI vintage of that date, about three months after "
                                       "the first release."],
         ]),
         "",
@@ -414,8 +415,9 @@ def terms(x: R) -> str:
         "### 11. Resolution and settlement",
         f"- **1 Oct {x.settle}.** Retrieve the WDI series once, archive the response and its `lastupdated` field, and "
         "compute growth with the archived code.",
-        f"- If {x.base} or {x.end} is missing from that vintage, or the indicator is discontinued, ForecastEx resolves "
-        "the contracts under its event review (Rule 415).",
+        f"- If {x.base} or {x.end} is missing from that vintage, read the series again at the same time on the first "
+        "business day of each following month, and resolve on the first vintage that has both years.",
+        "- If the indicator is discontinued, ForecastEx resolves the contracts under its event review (Rule 415).",
         "",
         "### 12. Acknowledged limits",
         f"- One outcome cannot confirm or refute the paper. A global recession year can move "
@@ -489,6 +491,23 @@ def terms(x: R) -> str:
         "fall back on archived vintages or an official successor and were cancelled at cost otherwise.",
         "- The ranges, strikes and chances are unchanged.",
         "",
+        "## Changes on 5 Nov 2026",
+        f"- The contracts resolve on 1 October {x.settle}, about three months after the World Bank's first estimate "
+        f"for {x.end}. They were to resolve a year later, on 1 October {x.settle + 1}, after the first round of "
+        "revisions.",
+        f"- In the World Bank's archive of past WDI vintages, five-year growth for end years "
+        f"{x.wdi['revision_end_years'][0]}–{x.wdi['revision_end_years'][1]} read on 1 October of the following year "
+        f"differs from the reading a year later by {x.wdi['mean_abs_diff']:.2f} points a year on average. The earlier "
+        f"reading is {x.wdi['rms_1oct_next_vs_latest']:.2f} points a year from the current vintage (root mean square) "
+        f"and the later one {x.wdi['rms_1oct_second_vs_latest']:.2f} (`wdi_revisions.py`, "
+        "`outputs/wdi_revisions.csv`).",
+        f"- The vintage current on 1 October of the following year has had the end year every year since "
+        f"{x.wdi['found_on_1oct_every_year_since']}. It lacked the end year for "
+        f"{and_list([str(y) for y in x.wdi['missing_on_1oct_next']])}, when the World Bank published later. A vintage "
+        "that lacks either year now moves the reading to the first business day of each following month until a "
+        "vintage has both. A discontinued series still goes to ForecastEx's event review (Rule 415).",
+        "- The ranges, strikes and chances are unchanged.",
+        "",
     ]
     return "\n".join(lines)
 
@@ -557,8 +576,10 @@ def restrict(agencies: str) -> str:
 
 
 def gdp_provisions(x: R, lead: str = "If") -> str:
-    return (f"{lead} the vintage current at the Resolution Time has no value for {x.base} or {x.end}, or the World "
-            "Bank has discontinued the series, ForecastEx resolves the contract under its event review (Rule 415).")
+    return (f"{lead} the vintage current at the Resolution Time has no value for {x.base} or {x.end}, the Resolution "
+            f"Time moves to {READ_CT} on the first business day of the next month, and so on each month until the "
+            "vintage current at that time has both years. If the World Bank has discontinued the series, ForecastEx "
+            "resolves the contract under its event review (Rule 415).")
 
 
 def gdp_fields(x: R, thr: str) -> dict[str, str]:
@@ -567,9 +588,9 @@ def gdp_fields(x: R, thr: str) -> dict[str, str]:
     return {
         "Instructions":
             f"The World Bank updates its World Development Indicators (WDI) several times a year. Its first estimate "
-            f"of world GDP per capita for {x.end} usually appears in mid-{x.end + 1}, and revisions follow. This "
-            f"contract resolves on the vintage current on 1 October {x.settle}, about one revision cycle later, with "
-            "both years read from that one vintage. This contract is not subject to early Resolution.",
+            f"of world GDP per capita for {x.end} usually appears in mid-{x.end + 1}. This contract resolves on the "
+            f"vintage current on 1 October {x.settle}, about three months later, with both years read from that one "
+            "vintage. This contract is not subject to early Resolution.",
         "Underlying":
             f"Average annual growth of world GDP per capita from {x.base} to {x.end}, computed as 100 × ln(GDP per "
             f"capita in {x.end} ÷ GDP per capita in {x.base}) ÷ {x.span} and not rounded. GDP per capita "

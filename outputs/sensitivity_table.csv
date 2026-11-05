@@ -1,0 +1,24 @@
+group,label,bin,drift_pp,threshold_growth_pp,sensitivity,false_positive,youden_j,auc,p_yes_no_effect_at_strike,p_yes_paper_at_strike
+Published,Published design,,2.2630,1.0887,0.8124,0.1276,0.6848,0.9103,0.8683,0.1838
+The paper’s estimate,"Country panel, every country weighted equally (Fig. IV)",,2.2630,1.0805,0.8230,0.1248,0.6982,0.9160,0.8683,0.1701
+The paper’s estimate,"Country panel, weighted by GDP (App. Fig. B.10)",,2.2630,1.1956,0.7570,0.1739,0.5831,0.8595,0.8683,0.2915
+The paper’s estimate,Re-estimated with NOAA temperature (App. Fig. B.11),,2.2630,1.1030,0.8092,0.1327,0.6764,0.9056,0.8683,0.1920
+The paper’s estimate,Re-estimated on World Bank GDP (App. Fig. B.11),,2.2630,1.0631,0.8607,0.1187,0.7420,0.9366,0.8683,0.1275
+The paper’s estimate,"Barro–Ursúa data from 1860, time series",,2.2630,1.1854,0.6010,0.1686,0.4324,0.7603,0.8683,0.4388
+The paper’s estimate,Barro–Ursúa country panel,,2.2630,1.1531,0.5846,0.1538,0.4307,0.7458,0.8683,0.4393
+The paper’s estimate,Transitory part of each shock only (App. B.4),,2.2630,1.2967,0.6317,0.2291,0.4026,0.7526,0.8683,0.4932
+The paper’s estimate,"Central estimate, no uncertainty",,2.2630,1.0775,0.8605,0.1236,0.7369,0.9347,0.8683,0.1315
+The paper’s estimate,Newey–West widths,,2.2630,1.1020,0.7942,0.1324,0.6618,0.8970,0.8683,0.2068
+The paper’s estimate,Uncertainty widened by half,,2.2630,1.0902,0.7666,0.1281,0.6385,0.8825,0.8683,0.2298
+Background growth,IMF misses not netted in the paper’s world,,2.2630,1.0534,0.8594,0.1157,0.7437,0.9378,0.8683,0.1263
+Background growth,Trend from 1991,,1.8980,1.2681,0.8133,0.1709,0.6424,0.9030,0.8808,0.2521
+Background growth,Trend from 2000,,2.2925,1.7078,0.8372,0.1736,0.6636,0.9112,0.9571,0.4372
+Background growth,Trend from 2005,,2.2641,1.7092,0.8316,0.2046,0.6271,0.8958,0.9394,0.4282
+Temperatures,Cool 2027 range,cool,2.2630,1.1565,0.7813,0.1554,0.6259,0.8814,0.8683,0.2447
+Temperatures,Warm 2027 range,warm,2.2630,1.0446,0.8554,0.1128,0.7426,0.9365,0.8683,0.1289
+Temperatures,No shocks after 2027,,2.2630,1.1041,0.8251,0.1331,0.6920,0.9139,0.8683,0.1761
+Temperatures,Shocks of 2023–27 only,,2.2630,1.1265,0.7881,0.1423,0.6457,0.8905,0.8683,0.2226
+Temperatures,Shocks of 2026–27 only,,2.2630,1.2924,0.6413,0.2264,0.4149,0.7627,0.8683,0.4827
+The contract,Growth from 2027,,2.2227,0.9551,0.7539,0.1543,0.5996,0.8638,0.7791,0.1952
+The contract,End year 2030,,2.2925,1.0860,0.8061,0.1362,0.6699,0.9041,0.8587,0.1887
+The contract,End year 2032,,2.2433,1.1704,0.7523,0.1812,0.5712,0.8570,0.8500,0.2825

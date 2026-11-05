@@ -82,6 +82,13 @@ PRIMARY = Design(note="PWT time-series IRF (paper Fig. III) with bootstrap uncer
 SCAN_END_YEARS = range(2028, 2038)
 END_YEAR_LOCKED: int | None = None
 
+# The trend baseline's start-year test (Patrick, 5 Nov 2026): average growth from a start year
+# through 2019, the last year before the pandemic, with its spread drawn from the same years.
+# Starts stop at 2005 so every window holds the 2009 recession; a window from 2010 on holds no
+# recession, and its spread is too narrow to be credible (J of 0.91-0.96).
+TREND_END = 2019
+TREND_STARTS = tuple(range(1991, 2006))
+
 
 # ----------------------------------------------------------------------------- context
 
@@ -488,6 +495,68 @@ def variants(P: Design = PRIMARY) -> list[Design]:
     ]
 
 
+def trend_design(P: Design, start: int) -> Design:
+    """The trend baseline with its average and spread taken from ``start`` through TREND_END."""
+    return replace(P, name=f"trend baseline: {start}-{TREND_END} average", baseline="frozen",
+                   calib=(start, TREND_END))
+
+
+def sensitivity_specs(P: Design) -> list[dict]:
+    """The Letter's sensitivity rows (its Fig. 4 and Extended Data Table 2), in order.
+
+    Each row changes one thing in the published design. ``bin`` names a conditional contract (the
+    run's draws within that range of NOAA's 2027 value). ``settings`` are the page's controls that
+    give the same design, over the page's defaults with 2027 drawn from today's forecast, and are
+    None where the page has no control for the change.
+    """
+    est, bg, tp, ct = "The paper’s estimate", "Background growth", "Temperatures", "The contract"
+
+    def row(group, label, design=None, settings=None, bin=None):
+        return {"group": group, "label": label, "design": design, "bin": bin,
+                "settings": None if settings is None else {"t27": "forecast", **settings}}
+
+    return [
+        row("Published", "Published design", P, {}),
+        row(est, "Country panel, every country weighted equally (Fig. IV)", replace(P, irf="PWT_panel"),
+            {"irf": "PWT_panel"}),
+        row(est, "Country panel, weighted by GDP (App. Fig. B.10)", replace(P, irf="PWT_panel_gdpw"),
+            {"irf": "PWT_panel_gdpw"}),
+        row(est, "Re-estimated with NOAA temperature (App. Fig. B.11)", replace(P, irf="PWT_ts_noaa"),
+            {"irf": "PWT_ts_noaa"}),
+        row(est, "Re-estimated on World Bank GDP (App. Fig. B.11)", replace(P, irf="PWT_ts_wdi"),
+            {"irf": "PWT_ts_wdi"}),
+        row(est, "Barro–Ursúa data from 1860, time series", replace(P, irf="BU_ts"), {"irf": "BU_ts"}),
+        row(est, "Barro–Ursúa country panel", replace(P, irf="BU_panel"), {"irf": "BU_panel"}),
+        row(est, "Transitory part of each shock only (App. B.4)", replace(P, irf="PWT_ts_transitory"),
+            {"irf": "PWT_ts_transitory"}),
+        row(est, "Central estimate, no uncertainty", replace(P, irf_uncertainty=False), {"uncertainty": "point"}),
+        row(est, "Newey–West widths", replace(P, irf="PWT_ts_NWscaled"), {"uncertainty": "nw"}),
+        row(est, "Uncertainty widened by half", replace(P, irf="PWT_ts_wide"), {"uncertainty": "wide"}),
+        row(bg, "IMF misses not netted in the paper’s world", replace(P, h1_background="raw"), {"netting": False}),
+        *[row(bg, f"Trend from {s}", trend_design(P, s), {"baseline": "frozen", "trendStart": s})
+          for s in (1991, 2000, 2005)],
+        row(tp, "Cool 2027 range", bin="cool", settings={"t27": "bin:cool"}),
+        row(tp, "Warm 2027 range", bin="warm", settings={"t27": "bin:warm"}),
+        row(tp, "No shocks after 2027", replace(P, future_temps="none"), {"future": "none"}),
+        row(tp, "Shocks of 2023–27 only", replace(P, scope="recent"), {"scope": "recent"}),
+        row(tp, "Shocks of 2026–27 only", replace(P, scope="incremental"), {"scope": "incremental"}),
+        row(ct, "Growth from 2027", replace(P, base_year=2027)),
+        row(ct, "End year 2030", replace(P, window=(2030, 2030)), {"endYear": 2030}),
+        row(ct, "End year 2032", replace(P, window=(2032, 2032)), {"endYear": 2032}),
+    ]
+
+
+def contract_row(sim: SimResult, d: Design, strike: float) -> dict:
+    """A design's contract at its own best cutoff, and each view's chance of Yes at ``strike``."""
+    o = sim.oc()
+    c = (strike - sim.null.mu) * mean_horizon(d)
+    return {"drift_pp": float(sim.null.mu), "threshold_growth_pp": float(growth_equivalent(sim.null.mu, d, o.threshold)),
+            "sensitivity": float(o.sensitivity), "false_positive": float(o.false_positive),
+            "youden_j": float(o.youden_j), "auc": float(o.auc),
+            "p_yes_no_effect_at_strike": float((sim.m0 > c).mean()),
+            "p_yes_paper_at_strike": float((sim.m1 > c).mean())}
+
+
 # ----------------------------------------------------------------------------- summaries
 
 def annual_bands(sim: SimResult, q=(0.05, 0.10, 0.50, 0.90, 0.95)) -> pd.DataFrame:
@@ -590,6 +659,22 @@ def conditional_bins(ctx: Context, d: Design, n: int = 50_000, seed: int = 20261
                      "sensitivity": oc.sensitivity, "false_positive": oc.false_positive, "youden_j": oc.youden_j,
                      "sim": sim})
     return pd.DataFrame(rows)
+
+
+def temperature_levels(ctx: Context, sim: SimResult) -> dict[int, np.ndarray]:
+    """Each path's NOAA annual temperature as the run builds it: observed through the anchor year,
+    the path's 2026-27 draws, then the forecast filter's prediction plus the path's simulated shock,
+    the same arithmetic ``remeasure`` starts from. Years after 2027 are absent without simulated
+    shocks."""
+    n = len(sim.m0)
+    T = {int(t): np.full(n, float(v)) for t, v in ctx.noaa.loc[:ANCHOR].items()}
+    T[2026] = np.broadcast_to(np.asarray(sim.inputs["T26"], float), (n,)).copy()
+    T[2027] = np.broadcast_to(np.asarray(sim.inputs["T27"], float), (n,)).copy()
+    ff = ctx.forecast_filter
+    raw = sim.inputs.get("future_raw") or {}
+    for t in sorted(raw):
+        T[t] = ff.coef[0] + sum(b * T[t - lag] for b, lag in zip(ff.coef[1:], ff.lags)) + np.asarray(raw[t], float)
+    return T
 
 
 def strike_ladder(sim: SimResult, d: Design, bars=np.round(np.arange(1.2, 2.81, 0.2), 1)) -> pd.DataFrame:

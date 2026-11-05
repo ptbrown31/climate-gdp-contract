@@ -1,6 +1,6 @@
 # Draft contract specification for world GDP per capita after the 2023–27 global temperature shocks
 
-*This is a **draft for comment**, refreshed 2026-10-31. The contracts were redesigned on 30 Oct 2026, and on 4 Nov 2026 their conditioning event moved to ForecastEx's Global Temperature contract (see the changes at the end).*
+*This is a **draft for comment**, refreshed 2026-11-05. The contracts were redesigned on 30 Oct 2026, and on 4 Nov 2026 their conditioning event moved to ForecastEx's Global Temperature contract (see the changes at the end).*
 
 - Three **conditional contracts**, one for each range of NOAA's 2027 global temperature, are proposed to list right after NOAA publishes its **2026 annual value (expected mid-January 2027)**.
 - The **plain ladder** asks the same question with no temperature condition and lists at the same time. Its terms are in `terms/plain_ladder_terms.md`.
@@ -30,7 +30,7 @@
 | ~Mar 2027 | NOAA publishes the winter (DJF) El Niño strength. Market prices can move on it, and the terms stay fixed. |
 | ~Mid-Jan 2028 | NOAA publishes its 2027 annual value, and ForecastEx's GT 2027 contracts resolve on it (listed for 14 January 2028). **The matching condition converts; the other two are refunded at cost.** |
 | Mid-2032 | World Bank publishes the first 2031 figure. |
-| **1 Oct 2033** | **Resolve and settle** on the WDI vintage of that date, one revision cycle after the first release. |
+| **1 Oct 2032** | **Resolve and settle** on the WDI vintage of that date, about three months after the first release. |
 
 ## Proposed terms
 
@@ -147,8 +147,9 @@ Each term is open for comment until the freeze.
 - More strikes may be listed after conversion. The cutoff for the realised 2026 and 2027 values comes from `python -I run_analysis.py --lock <T2026> <T2027>` on the archived data (`outputs/threshold_grid.csv` shows how it moves).
 
 ### 11. Resolution and settlement
-- **1 Oct 2033.** Retrieve the WDI series once, archive the response and its `lastupdated` field, and compute growth with the archived code.
-- If 2026 or 2031 is missing from that vintage, or the indicator is discontinued, ForecastEx resolves the contracts under its event review (Rule 415).
+- **1 Oct 2032.** Retrieve the WDI series once, archive the response and its `lastupdated` field, and compute growth with the archived code.
+- If 2026 or 2031 is missing from that vintage, read the series again at the same time on the first business day of each following month, and resolve on the first vintage that has both years.
+- If the indicator is discontinued, ForecastEx resolves the contracts under its event review (Rule 415).
 
 ### 12. Acknowledged limits
 - One outcome cannot confirm or refute the paper. A global recession year can move five-year growth by several points; 2020 alone was −3.9%.
@@ -202,4 +203,10 @@ Each entry gives who would raise it, the answer, and whether the design addresse
 - The GISTEMP fallback is dropped. If NOAA is late, conversion waits under GT's terms. GISTEMP takes its land and ocean data from NOAA and was delayed with it in 2019, so it would not cover a NOAA outage.
 - Growth is used unrounded. It was rounded to two decimals.
 - A missing year or a discontinued series goes to ForecastEx's event review (Rule 415). The contracts used to fall back on archived vintages or an official successor and were cancelled at cost otherwise.
+- The ranges, strikes and chances are unchanged.
+
+## Changes on 5 Nov 2026
+- The contracts resolve on 1 October 2032, about three months after the World Bank's first estimate for 2031. They were to resolve a year later, on 1 October 2033, after the first round of revisions.
+- In the World Bank's archive of past WDI vintages, five-year growth for end years 2010–2024 read on 1 October of the following year differs from the reading a year later by 0.08 points a year on average. The earlier reading is 0.12 points a year from the current vintage (root mean square) and the later one 0.11 (`wdi_revisions.py`, `outputs/wdi_revisions.csv`).
+- The vintage current on 1 October of the following year has had the end year every year since 2011. It lacked the end year for 2003, 2008 and 2009, when the World Bank published later. A vintage that lacks either year now moves the reading to the first business day of each following month until a vintage has both. A discontinued series still goes to ForecastEx's event review (Rule 415).
 - The ranges, strikes and chances are unchanged.

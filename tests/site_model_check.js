@@ -1,5 +1,6 @@
 // Runs site_tab/js/elnino-model.js on the published bundle for each case tests/test_site_model.py
-// writes, and prints how far each case's statistics land from the run's own (JSON on stdout).
+// writes, and prints how far each case's statistics land from the run's own (JSON on stdout). A case
+// without the run's paths beside it reports only its statistics.
 const fs = require('fs');
 const path = require('path');
 const M = require('../site_tab/js/elnino-model.js');
@@ -24,9 +25,11 @@ const readF64 = f => { const b = fs.readFileSync(path.join(refDir, f)); return n
     const ms = Date.now() - t;
     const diff = (a, b) => { let m = 0; for (let i = 0; i < a.length; i++) m = Math.max(m, Math.abs(a[i] - b[i])); return m; };
     const y = r.youden(c.E);
+    const ref = v => fs.existsSync(path.join(refDir, c.name + '_' + v + '.bin')) ? readF64(c.name + '_' + v + '.bin') : null;
+    const ref0 = ref('m0'), ref1 = ref('m1');
     out[c.name] = {
-      maxdiff0: diff(r.m(0, c.E), readF64(c.name + '_m0.bin')),
-      maxdiff1: diff(r.m(1, c.E), readF64(c.name + '_m1.bin')),
+      maxdiff0: ref0 ? diff(r.m(0, c.E), ref0) : null,
+      maxdiff1: ref1 ? diff(r.m(1, c.E), ref1) : null,
       youden: { threshold: y.threshold, sensitivity: y.sensitivity, falsePositive: y.falsePositive, growth: y.growth },
       pYes0: r.pYes(0, c.E, model.meta.defaults.strike), pYes1: r.pYes(1, c.E, model.meta.defaults.strike),
       ms,

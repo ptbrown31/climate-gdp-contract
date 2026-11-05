@@ -381,6 +381,13 @@ def main(refresh: bool = False):
         "youden_j_without": nofut.oc().youden_j,
         "note": "simulated post-2027 shocks enter H1 through their innovations (the part the two prior shocks do "
                 "not predict); the cutoff is still fixed in advance"}
+    tl = A.temperature_levels(ctx, prim)
+    res["future_temperatures"]["levels"] = {
+        str(t): {"mean": float(tl[t].mean()), **{f"q{round(100 * q):02d}": float(np.quantile(tl[t], q))
+                                                 for q in (0.05, 0.10, 0.50, 0.90, 0.95)}}
+        for t in sorted(tl) if t >= D.base_year}
+    res["future_temperatures"]["levels_note"] = ("NOAA annual temperature on each path (deg C vs 1901-2000): the "
+                                                 "2026-27 draws, then the forecast filter plus the simulated shock")
     eff_q = pd.DataFrame({"q05": np.quantile(prim.effect, 0.05, axis=0), "q50": np.quantile(prim.effect, 0.5, axis=0),
                           "q95": np.quantile(prim.effect, 0.95, axis=0)}, index=prim.years)
 
@@ -447,11 +454,41 @@ def main(refresh: bool = False):
            if r.variant == "primary" or r.variant.startswith("scope:")}}
     res["contract_variants"] = vt.to_dict(orient="records")
 
+    # the trend baseline's start year and the Letter's sensitivity rows, each at its own best cutoff and
+    # at the central contract's strike
+    strike = float(bins.loc[bins.bin == "central", "strike"].iloc[0])
+    trows = []
+    for s in A.TREND_STARTS:
+        d = A.trend_design(D, s)
+        sim = A.simulate(ctx, d, N_PATHS, SEED, D0_cache=cache)
+        trows.append({"start": s, "sigma_pp": float(sim.null.sigma), **A.contract_row(sim, d, strike)})
+    tt = pd.DataFrame(trows)
+    tt.to_csv(OUT / "trend_start_scan.csv", index=False, float_format="%.4f")
+    res["trend_start_scan"] = {
+        "window_end": A.TREND_END, "strike": strike, "rows": tt.to_dict(orient="records"),
+        "note": "the trend baseline's average and spread from each start year through window_end; starts stop "
+                "at 2005 so every window holds the 2009 recession"}
+    bin_sims = {r.bin: r.sim for r in bins.itertuples()}
+    srows = []
+    for sp in A.sensitivity_specs(D):
+        d = sp["design"] or D
+        sim = bin_sims[sp["bin"]] if sp["bin"] else prim if d is D else A.simulate(ctx, d, N_PATHS, SEED,
+                                                                                   D0_cache=cache)
+        srows.append({"group": sp["group"], "label": sp["label"], "bin": sp["bin"], "settings": sp["settings"],
+                      **A.contract_row(sim, d, strike)})
+    pd.DataFrame(srows).drop(columns="settings").to_csv(OUT / "sensitivity_table.csv", index=False,
+                                                        float_format="%.4f")
+    res["sensitivity_table"] = {
+        "strike": strike, "rows": srows,
+        "note": "one change to the published design per row; settings are the page's controls for it, None "
+                "where the page has none"}
+
     t27_grid = np.round(np.arange(1.25, 1.801, 0.025), 3)
     t26_vals = ([round(ctx.T26[0], 3)] if ctx.prov26.observed else
                 [round(ctx.T26[0] - 0.03, 3), round(ctx.T26[0], 3), round(ctx.T26[0] + 0.03, 3)])
     grid = A.threshold_grid(ctx, D, t27_grid, t26_vals, N_PATHS, SEED, D0_cache=cache)
     grid.to_csv(OUT / "threshold_grid.csv", index=False, float_format="%.4f")
+    res["threshold_grid"] = {"T2026_values": t26_vals, "rows": grid.to_dict(orient="records")}
     alt = "incremental" if D.scope != "incremental" else "full"
     gi = A.threshold_grid(ctx, replace(D, name=alt, scope=alt), t27_grid, [round(ctx.T26[0], 3)],
                           N_PATHS, SEED, D0_cache=cache)

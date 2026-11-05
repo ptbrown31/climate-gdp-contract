@@ -39,7 +39,17 @@ CASES = [
     ("nofuture", {"t27": "forecast", "future": "none"}, 2031),
     ("point", {"t27": "forecast", "uncertainty": "point"}, 2031),
     ("end2029", {"t27": "forecast"}, 2029),
+    ("trend1991", {"t27": "forecast", "baseline": "frozen", "trendStart": 1991}, 2031),
+    ("trend2005", {"t27": "forecast", "baseline": "frozen", "trendStart": 2005}, 2031),
 ]
+
+
+def run_cases(tmp_path, cases):
+    (tmp_path / "cases.json").write_text(json.dumps(cases))
+    run = subprocess.run([NODE, str(ROOT / "tests" / "site_model_check.js"), str(tmp_path)],
+                         capture_output=True, text=True, timeout=600)
+    assert run.returncode == 0, run.stderr
+    return json.loads(run.stdout)
 
 
 def test_page_model_replays_the_run(tmp_path):
@@ -47,11 +57,7 @@ def test_page_model_replays_the_run(tmp_path):
     for name, _, _ in CASES:
         for v in ("m0", "m1"):
             ref[f"{name}_{v}"].astype("<f8").tofile(tmp_path / f"{name}_{v}.bin")
-    (tmp_path / "cases.json").write_text(json.dumps([{"name": n, "settings": s, "E": e} for n, s, e in CASES]))
-    run = subprocess.run([NODE, str(ROOT / "tests" / "site_model_check.js"), str(tmp_path)],
-                         capture_output=True, text=True, timeout=600)
-    assert run.returncode == 0, run.stderr
-    got = json.loads(run.stdout)
+    got = run_cases(tmp_path, [{"name": n, "settings": s, "E": e} for n, s, e in CASES])
     for name, _, _ in CASES:
         g = got[name]
         assert g["maxdiff0"] < 0.005 and g["maxdiff1"] < 0.005, (name, g["maxdiff0"], g["maxdiff1"])
@@ -60,6 +66,24 @@ def test_page_model_replays_the_run(tmp_path):
         assert abs(y["threshold"] - oc.threshold) < 0.02, (name, y["threshold"], oc.threshold)
         assert abs(y["sensitivity"] - oc.sensitivity) < 5e-4, (name, y["sensitivity"], oc.sensitivity)
         assert abs(y["falsePositive"] - oc.false_positive) < 5e-4, (name, y["falsePositive"], oc.false_positive)
+
+
+def test_sensitivity_rows_match_the_page_model(tmp_path):
+    """Each row of the Letter's sensitivity table (Fig. 4, Extended Data Table 2) that the page can set
+    gives the table's numbers when the page model runs at that row's settings."""
+    model = json.loads(BUNDLE.read_text())
+    table = model["published"]["sensitivity"]
+    rows = [r for r in table["rows"] if r["settings"] is not None]
+    assert len(rows) == len(table["rows"]) - 1          # only growth from 2027 has no control
+    assert model["defaults"]["strike"] == table["strike"]
+    got = run_cases(tmp_path, [{"name": f"row{i}", "settings": r["settings"],
+                                "E": r["settings"].get("endYear", model["endYear"])} for i, r in enumerate(rows)])
+    for i, r in enumerate(rows):
+        g, y = got[f"row{i}"], got[f"row{i}"]["youden"]
+        assert abs(g["pYes0"] - r["p_yes_no_effect_at_strike"]) < 2e-3, (r["label"], g["pYes0"])
+        assert abs(g["pYes1"] - r["p_yes_paper_at_strike"]) < 2e-3, (r["label"], g["pYes1"])
+        assert abs(y["growth"] - r["threshold_growth_pp"]) < 0.01, (r["label"], y["growth"])
+        assert abs(y["sensitivity"] - y["falsePositive"] - r["youden_j"]) < 2e-3, (r["label"], y)
 
 
 def test_page_opens_on_the_published_central_contract():

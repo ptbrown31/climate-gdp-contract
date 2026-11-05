@@ -3,6 +3,7 @@
 The flagship must read exactly as the plain ladder does at its threshold, every conditional threshold needs a
 plain contract to convert into, the chances must be the run's, and no document may use gambling language.
 """
+import json
 import re
 
 import pytest
@@ -72,3 +73,24 @@ def test_gt_bounds_give_the_ranges(x):
         assert (b["lower"] is None or t > b["lower"]) and (b["upper"] is None or t <= b["upper"]), (t, name)
     assert B.rng_text(x.bin("cool")).startswith(f"{lo:.2f} ")
     assert B.rng_text(x.bin("central")).endswith(f"{hi:.2f} °C")
+
+
+def test_resolution_follows_the_first_estimate(x, docs):
+    """1 October of the year after the end year, read again each month while the vintage lacks a year."""
+    assert x.settle == x.end + 1
+    for name, text in docs.items():
+        assert f"1 October {x.settle}" in text and f"1 October {x.settle + 1}" not in text, name
+        assert "on the first business day of the next month" in text, name
+
+
+def test_archive_summary_matches_its_rows():
+    """The figures CONTRACT_TERMS.md quotes from wdi_revisions.py's summary are those of its own rows."""
+    w = json.loads((B.OUT / "wdi_revisions.json").read_text())
+    s, rev, av = w["summary"], w["revisions"], w["availability"]
+    d = [r["g5_1oct_next"] - r["g5_1oct_second"] for r in rev]
+    assert s["n_end_years"] == len(rev) and s["mean_abs_diff"] == pytest.approx(sum(map(abs, d)) / len(d), abs=1e-3)
+    assert s["max_abs_diff"] == pytest.approx(max(map(abs, d)), abs=1e-3)
+    assert s["missing_on_1oct_next"] == [r["year"] for r in av if not r["on_1oct_next"]]
+    since = s["found_on_1oct_every_year_since"]
+    assert all(r["on_1oct_next"] for r in av if r["year"] + 1 >= since)
+    assert not all(r["on_1oct_next"] for r in av if r["year"] + 1 >= since - 1)

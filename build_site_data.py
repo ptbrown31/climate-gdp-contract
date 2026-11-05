@@ -178,18 +178,30 @@ def main():
               ("z26", (np.asarray(inp["T26"]) - ctx.T26[0]) / ctx.T26[1]),
               ("z27", (np.asarray(inp["T27"]) - ctx.T27[0]) / ctx.T27[1]),
               ("future", np.column_stack([inp["future_raw"][t] for t in fut_years])),
-              ("t27bins", np.column_stack([np.asarray(r.sim.inputs["T27"]) - m27 for r in bins.itertuples()]))]
+              ("t27bins", np.column_stack([np.asarray(r.sim.inputs["T27"]) - m27 for r in bins.itertuples()])),
+              ("d0base", prim.D0[:, jb])]                    # the 2025-to-2026 miss, for levels from 2025
     raw, meta = pack(fields, N_PATHS)
     written: set = set()
     paths_file = put("paths", raw, written)
-    raw_f, meta_f = pack([("d0", rel(frozen.D0))], N_PATHS)
-    frozen_file = put("paths_frozen", raw_f, written)
+    # the trend baseline for each start year, one file each, fetched when the page asks for that start
+    trend, trend_sims = {}, {}
+    for s in A.TREND_STARTS:
+        sim = frozen if (s, A.TREND_END) == tuple(D.calib) else A.simulate(ctx, A.trend_design(D, s), N_PATHS, SEED)
+        raw_t, meta_t = pack([("d0", rel(sim.D0)), ("d0base", sim.D0[:, jb])], N_PATHS)
+        trend[str(s)] = {"file": put(f"paths_trend_{s}", raw_t, written), "fields": meta_t, "mu": float(sim.null.mu),
+                         "calib": [s, A.TREND_END], "Dbar": [float(v) for v in rel(sim.D0).mean(axis=0)]}
+        trend_sims[s] = sim
+        back_t = unpack(raw_t, meta_t, N_PATHS)
+        sct = {f["name"]: f["scale"] for f in meta_t}
+        assert np.abs(back_t["d0"] - rel(sim.D0)).max() <= 0.5 / sct["d0"] + 1e-12, f"trend {s} d0"
+    trend_default = trend[str(D.calib[0])]
 
     # the stored arrays must give back the run's own inputs
     back = unpack(raw, meta, N_PATHS)
     assert np.array_equal(back["idx"].ravel().astype(int), inp["idx"]), "IRF draw index not exact"
     sc = {f["name"]: f["scale"] for f in meta}
     assert np.abs(back["d0"] - rel(prim.D0)).max() <= 0.5 / sc["d0"] + 1e-12
+    assert np.abs(back["d0base"].ravel() - prim.D0[:, jb]).max() <= 0.5 / sc["d0base"] + 1e-12
 
     # the paper's estimates
     irfs = []
@@ -219,6 +231,8 @@ def main():
     noaa = ctx.noaa.loc[:2025]
     oni = S.read_oni(ROOT / "data/raw/oni/oni.ascii.txt")
     djf_oni = oni[oni.season == "DJF"].set_index("year")["anom"]
+    bands = A.annual_bands(prim)
+    t26c = min(res["threshold_grid"]["T2026_values"], key=lambda v: abs(v - ctx.T26[0]))
     model = {
         "schema": 1,
         "written": pd.Timestamp.now(tz="UTC").isoformat(timespec="seconds"),
@@ -227,7 +241,8 @@ def main():
         "endYears": END_YEARS, "endYear": end, "hMax": I.H_MAX, "beyond": D.beyond,
         "paths": {"file": paths_file, "fields": meta, "futureYears": fut_years, "t27center": m27,
                   "binOrder": list(bins.bin)},
-        "pathsFrozen": {"file": frozen_file, "fields": meta_f},
+        "pathsFrozen": {"file": trend_default["file"], "fields": trend_default["fields"]},
+        "trend": {"windowEnd": A.TREND_END, "default": int(D.calib[0]), "starts": trend},
         "noaa": {"first": int(noaa.index.min()), "T": [round(float(v), 4) for v in noaa.values]},
         "forecastFilter": {"coef": [float(c) for c in ctx.forecast_filter.coef],
                            "lags": list(ctx.forecast_filter.lags)},
@@ -248,11 +263,13 @@ def main():
         "frozen": {"mu": float(frozen.null.mu), "calib": list(D.calib),
                    "Dbar": [float(v) for v in rel(frozen.D0).mean(axis=0)]},
         "wdi": {"growth": {str(int(t)): round(float(v), 4) for t, v in wdi_g.loc[1991:2025].items()},
+                "levels": {str(int(t)): round(float(v), 3) for t, v in ctx.wdi.loc[:A.ANCHOR].dropna().items()},
                 "series": "World Bank WDI NY.GDP.PCAP.PP.KD (world GDP per capita, PPP, constant 2021 dollars)",
                 "lastUpdated": ctx.wdi_meta.get("lastupdated")},
         "defaults": {"irf": "PWT_ts", "uncertainty": "boot", "share": 1.0, "baseline": "imf", "missShare": 1.0,
                      "spread": 1.0, "netting": True, "t26": "forecast", "t27": "bin:central", "t26Value": None,
                      "t27Value": None, "future": "simulate", "scope": D.scope, "endYear": end,
+                     "trendStart": int(D.calib[0]),
                      "strike": float(next(b for b in res["conditional_contracts"]["bins"]
                                           if b["bin"] == "central")["strike"])},
         "published": {
@@ -268,7 +285,17 @@ def main():
             "variants": [dict({k: v[k] for k in ("variant", "threshold_growth_pp", "sensitivity", "false_positive",
                                                  "youden_j")}, label=lab)
                          for key, lab in PAGE_VARIANTS for v in res["contract_variants"] if v["variant"] == key],
-            "imfMissIfCentred": res["imf_miss_if_centred"]},
+            "imfMissIfCentred": res["imf_miss_if_centred"],
+            # the Letter's figures at the published settings: GDP levels and temperatures (Fig. 1a), the
+            # sensitivity rows (Fig. 4), the trend baseline's start year and a known 2027 value
+            "levels": {str(t): {v: [round(float(bands.loc[t, f"{k}_level_q{q:02d}"]), 1) for q in (10, 50, 90)]
+                                for v, k in (("h0", "H0"), ("h1", "H1"))} for t in YEARS},
+            "futureTemperatures": res["future_temperatures"]["levels"],
+            "sensitivity": res["sensitivity_table"],
+            "trendStartScan": res["trend_start_scan"],
+            "t27Grid": {"T2026": t26c, "rows": [{k: r[k] for k in ("T2027", "s2027", "mean_shift", "threshold_growth_pp",
+                                                                 "sensitivity", "false_positive", "youden_j")}
+                                                for r in res["threshold_grid"]["rows"] if r["T2026"] == t26c]}},
         "ladder": {"strikes": LADDER, "lists": "mid-January 2027", "symbol": None,
                    "note": "the article's contract; the exchange's own strikes replace it when it lists"},
         "code": {"repo": REPO, "paper": "https://doi.org/10.1093/qje/qjag011",
@@ -295,6 +322,8 @@ def main():
     # reference outcomes for the engine test (not published): the run's own statistics, path by path
     FIXTURE.parent.mkdir(parents=True, exist_ok=True)
     ref = {"primary_m0": prim.m0, "primary_m1": prim.m1, "frozen_m0": frozen.m0, "frozen_m1": frozen.m1}
+    for s in (A.TREND_STARTS[0], A.TREND_STARTS[-1]):
+        ref[f"trend{s}_m0"], ref[f"trend{s}_m1"] = trend_sims[s].m0, trend_sims[s].m1
     for r in bins.itertuples():
         ref[f"{r.bin}_m0"], ref[f"{r.bin}_m1"] = r.sim.m0, r.sim.m1
     for key, d in [("panel", replace(D, irf="PWT_panel")), ("bu", replace(D, irf="BU_ts")),

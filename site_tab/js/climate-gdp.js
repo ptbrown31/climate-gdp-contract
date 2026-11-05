@@ -635,12 +635,12 @@ window.WXGdp = (() => {
   // ---------------------------------------------------------------- Figure 8: timeline
   function drawTimeline(svg) {
     clear(svg);
-    const m = M.meta, E = S.endYear, settle = E + 2, d = (y, mo) => y + (mo - 1) / 12;
+    const m = M.meta, E = S.endYear, settle = E + 1, d = (y, mo) => y + (mo - 1) / 12;
     const F = frame({ W: 960, H: 300, L: 290, R: 20, T: 70, B: 30, x0: d(2026, 7), x1: d(settle + 1, 3), y0: 0, y1: 4 });
     const rows = [['Open for comment; estimates updated monthly', d(2026, 10), d(2027, 1.5), 'var(--gdp-paper)'],
                   ['Conditional contracts trade', d(2027, 1.5), d(2028, 1.5), 'var(--accent)'],
                   ['Growth period measured', d(m.base + 1, 1), d(E + 1, 1), NULL],
-                  ['World Bank publishes and revises the data', d(E + 1, 7), d(settle, 10), 'var(--muted)']];
+                  ['World Bank publishes its ' + E + ' estimate', d(E + 1, 7), d(settle, 10), 'var(--muted)']];
     const rowY = i => F.T + 12 + i * 52;
     for (let y = 2027; y <= settle + 1; y++) {
       svg.appendChild(el('line', { x1: F.x(y), x2: F.x(y), y1: F.T - 6, y2: F.H - F.B, class: 'grid' }));
@@ -754,7 +754,7 @@ window.WXGdp = (() => {
       },
       8: {
         title: 'Dates in the terms',
-        body: ['The terms are fixed when NOAA publishes its 2026 annual value, in mid-January 2027, and the conditional contracts list right after. When NOAA publishes 2027’s value, in mid-January 2028, positions in the matching contract convert into a regular contract at the same cost and the other two are refunded. All resolve on October 1 two years after the end year, once the World Bank has published and revised that year’s figure.'],
+        body: ['The terms are fixed when NOAA publishes its 2026 annual value, in mid-January 2027, and the conditional contracts list right after. When NOAA publishes 2027’s value, in mid-January 2028, positions in the matching contract convert into a regular contract at the same cost and the other two are refunded. All resolve on October 1 of the year after the end year, about three months after the World Bank’s first estimate for that year, or on the first business day of a later month if that estimate is late.'],
         n: 'End year ' + E + '.',
       },
     };

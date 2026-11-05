@@ -1,0 +1,329 @@
+{
+ "series": "NY.GDP.PCAP.PP.KD",
+ "country": "WLD",
+ "archive": "https://api.worldbank.org/v2/sources/57 (WDI Database Archives)",
+ "vintages": 122,
+ "first_vintage": "200404",
+ "latest_vintage": "202607",
+ "retrieved": "2026-11-05",
+ "summary": {
+  "revision_end_years": [
+   2010,
+   2024
+  ],
+  "n_end_years": 15,
+  "mean_abs_diff": 0.0757,
+  "mean_diff": -0.0474,
+  "max_abs_diff": 0.3288,
+  "max_abs_diff_end_year": 2012,
+  "max_abs_diff_without_ppp_move": 0.1623,
+  "n_ppp_move_years": 3,
+  "rms_1oct_next_vs_latest": 0.117,
+  "rms_1oct_second_vs_latest": 0.112,
+  "mean_1oct_next_vs_latest": -0.027,
+  "mean_1oct_second_vs_latest": 0.0204,
+  "availability_years": [
+   2003,
+   2025
+  ],
+  "missing_on_1oct_next": [
+   2003,
+   2008,
+   2009
+  ],
+  "found_on_1oct_every_year_since": 2011,
+  "n_found_since": 16
+ },
+ "availability": [
+  {
+   "year": 2003,
+   "first_vintage": "200504",
+   "vintage_1oct_next": "200404",
+   "on_1oct_next": false
+  },
+  {
+   "year": 2004,
+   "first_vintage": "200509",
+   "vintage_1oct_next": "200509",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2005,
+   "first_vintage": "200609",
+   "vintage_1oct_next": "200609",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2006,
+   "first_vintage": "200709",
+   "vintage_1oct_next": "200709",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2007,
+   "first_vintage": "200809",
+   "vintage_1oct_next": "200809",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2008,
+   "first_vintage": "200910",
+   "vintage_1oct_next": "200905",
+   "on_1oct_next": false
+  },
+  {
+   "year": 2009,
+   "first_vintage": "201012",
+   "vintage_1oct_next": "201007",
+   "on_1oct_next": false
+  },
+  {
+   "year": 2010,
+   "first_vintage": "201107",
+   "vintage_1oct_next": "201109",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2011,
+   "first_vintage": "201207",
+   "vintage_1oct_next": "201209",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2012,
+   "first_vintage": "201307",
+   "vintage_1oct_next": "201307",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2013,
+   "first_vintage": "201407",
+   "vintage_1oct_next": "201409",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2014,
+   "first_vintage": "201507",
+   "vintage_1oct_next": "201509",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2015,
+   "first_vintage": "201607",
+   "vintage_1oct_next": "201608",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2016,
+   "first_vintage": "201706",
+   "vintage_1oct_next": "201709",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2017,
+   "first_vintage": "201806",
+   "vintage_1oct_next": "201809",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2018,
+   "first_vintage": "201906",
+   "vintage_1oct_next": "201909",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2019,
+   "first_vintage": "202007",
+   "vintage_1oct_next": "202009",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2020,
+   "first_vintage": "202107",
+   "vintage_1oct_next": "202109",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2021,
+   "first_vintage": "202207",
+   "vintage_1oct_next": "202209",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2022,
+   "first_vintage": "202307",
+   "vintage_1oct_next": "202309",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2023,
+   "first_vintage": "202407",
+   "vintage_1oct_next": "202409",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2024,
+   "first_vintage": "202507",
+   "vintage_1oct_next": "202507",
+   "on_1oct_next": true
+  },
+  {
+   "year": 2025,
+   "first_vintage": "202607",
+   "vintage_1oct_next": "202607",
+   "on_1oct_next": true
+  }
+ ],
+ "revisions": [
+  {
+   "end_year": 2010,
+   "vintage_1oct_next": "201109",
+   "vintage_1oct_second": "201209",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 2.2418,
+   "g5_1oct_second": 2.1775,
+   "g5_latest": 2.2024,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2011,
+   "vintage_1oct_next": "201209",
+   "vintage_1oct_second": "201307",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 1.9257,
+   "g5_1oct_second": 1.9074,
+   "g5_latest": 1.9676,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2012,
+   "vintage_1oct_next": "201307",
+   "vintage_1oct_second": "201409",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 1.4788,
+   "g5_1oct_second": 1.8076,
+   "g5_latest": 1.5678,
+   "ppp_move_between": true
+  },
+  {
+   "end_year": 2013,
+   "vintage_1oct_next": "201409",
+   "vintage_1oct_second": "201509",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 1.8526,
+   "g5_1oct_second": 1.8563,
+   "g5_latest": 1.6623,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2014,
+   "vintage_1oct_next": "201509",
+   "vintage_1oct_second": "201608",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 2.5674,
+   "g5_1oct_second": 2.5479,
+   "g5_latest": 2.4865,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2015,
+   "vintage_1oct_next": "201608",
+   "vintage_1oct_second": "201709",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 2.1347,
+   "g5_1oct_second": 2.2507,
+   "g5_latest": 2.1483,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2016,
+   "vintage_1oct_next": "201709",
+   "vintage_1oct_second": "201809",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 2.0748,
+   "g5_1oct_second": 2.1318,
+   "g5_latest": 2.0245,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2017,
+   "vintage_1oct_next": "201809",
+   "vintage_1oct_second": "201909",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 2.2286,
+   "g5_1oct_second": 2.2743,
+   "g5_latest": 2.1763,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2018,
+   "vintage_1oct_next": "201909",
+   "vintage_1oct_second": "202009",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 2.3423,
+   "g5_1oct_second": 2.2728,
+   "g5_latest": 2.2803,
+   "ppp_move_between": true
+  },
+  {
+   "end_year": 2019,
+   "vintage_1oct_next": "202009",
+   "vintage_1oct_second": "202109",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 2.1971,
+   "g5_1oct_second": 2.1685,
+   "g5_latest": 2.2134,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2020,
+   "vintage_1oct_next": "202109",
+   "vintage_1oct_second": "202209",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 0.8632,
+   "g5_1oct_second": 0.9064,
+   "g5_latest": 1.0269,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2021,
+   "vintage_1oct_next": "202209",
+   "vintage_1oct_second": "202309",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 1.472,
+   "g5_1oct_second": 1.5772,
+   "g5_latest": 1.724,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2022,
+   "vintage_1oct_next": "202309",
+   "vintage_1oct_second": "202409",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 1.5645,
+   "g5_1oct_second": 1.626,
+   "g5_latest": 1.7459,
+   "ppp_move_between": true
+  },
+  {
+   "end_year": 2023,
+   "vintage_1oct_next": "202409",
+   "vintage_1oct_second": "202507",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 1.5676,
+   "g5_1oct_second": 1.7299,
+   "g5_latest": 1.7028,
+   "ppp_move_between": false
+  },
+  {
+   "end_year": 2024,
+   "vintage_1oct_next": "202507",
+   "vintage_1oct_second": "202607",
+   "vintage_latest": "202607",
+   "g5_1oct_next": 1.813,
+   "g5_1oct_second": 1.8008,
+   "g5_latest": 1.8008,
+   "ppp_move_between": false
+  }
+ ]
+}
