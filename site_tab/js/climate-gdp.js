@@ -1471,7 +1471,7 @@ window.WXGdp = (() => {
     $('#gdpByline').innerHTML = 'Patrick T. Brown · Draft for comment · <a href="#reproduce">Data and code</a> · <a href="' + esc(M.meta.code.paper) + '">The paper</a>';
     $('#gdpListing').textContent = listedBook()
       ? 'Listed on ForecastEx as ' + BOOK.name + '. The bars carry the exchange’s prices for the ' + M.meta.base + '–' + D.endYear
-        + ' contract, Yes green and No red. The two marks on each bar are the views’ chances of Yes from the model on this page, not prices.'
+        + ' contract, Yes green and No red. The two marks on each bar are the views’ chances of Yes from the model on this page.'
       : 'Not listed yet. The contract is proposed to list ' + M.meta.ladder.lists + ', after NOAA publishes its 2026 annual value. Until then the ladder shows the proposed ' + (M.meta.ladder.strikes.length > 1 ? 'strikes' : 'strike') + ', hatched, with each view’s chance of Yes; once it lists, the bars carry the exchange’s prices and each opens the contract on IBKR.';
     if (A.schema === 2) renderLetter(); else renderArticle();
     renderRepro();
