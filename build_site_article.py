@@ -12,6 +12,11 @@ figures and tables are found by their legends ("Fig. 1 |", "Extended Data Fig. 2
 Data Table 1 |", "Supplementary Table 1 |"). The page draws a figure live where it has a drawing
 for it, and otherwise shows the draft's own picture, which is written beside letter.json.
 
+Since 6 Nov 2026 the Letter opens with Patrick's article instead of a byline and summary: a
+subtitle, then an introduction with indented quotations and lists, up to the first top-level
+heading. Each top-level heading starts a section of the page, and lower headings are its
+subsections. The Letter's own opening (byline, affiliations, note, bold summary) still reads.
+
     python3 -I build_site_article.py draft.docx     # or set ELNINO_DRAFT to the draft's path
 
 Writes site_tab/data/elnino/article.json, or for the Letter letter.json and letter/<hash>.png.
@@ -263,35 +268,64 @@ def letter_table(c) -> list[list[list[dict]]]:
     return rows
 
 
+def intro_blocks(front: list) -> list[dict]:
+    """The article-form introduction: paragraphs, indented quotations (marked indent) and lists, as the page
+    prints them."""
+    out = []
+    for b in front:
+        t = b["t"]
+        if t in ("Para", "Plain"):
+            runs = letter_runs(b["c"])
+            if runs_text(runs).strip():
+                out.append({"type": "p", "runs": runs})
+        elif t == "BlockQuote":
+            out += [dict(x, indent=True) for x in intro_blocks(b["c"])]
+        elif t in ("OrderedList", "BulletList"):
+            items = b["c"][1] if t == "OrderedList" else b["c"]
+            out.append({"type": "list", "ordered": t == "OrderedList",
+                        "items": [letter_runs(x for blk in item for x in blk.get("c", []) if isinstance(x, dict))
+                                  for item in items]})
+        elif t == "Header":
+            text = runs_text(letter_runs(b["c"][2])).strip()
+            out.append({"type": "h3", "text": text, "id": slug(text)})
+    return out
+
+
 def convert_letter(path: Path, media_dir: Path) -> dict:
     doc = pandoc_ast(path)
     zf = zipfile.ZipFile(path)
     title = runs_text(letter_runs(doc["meta"].get("title", {}).get("c", []))).strip()
+    subtitle = runs_text(letter_runs(doc["meta"].get("subtitle", {}).get("c", []))).strip()
     blocks = doc["blocks"]
     paras = lambda b: b["t"] in ("Para", "Plain")  # noqa: E731
     head_text = lambda b: runs_text(letter_runs(b["c"][2])).strip()  # noqa: E731
+    top = lambda b: b["t"] == "Header" and (b["c"][0] == 1 or head_text(b) in SECTIONS)  # noqa: E731
 
-    # the front matter: byline, affiliations, the draft's own note, the summary (all bold), the main text
-    i, front = 0, []
-    while i < len(blocks) and not (blocks[i]["t"] == "Header" and head_text(blocks[i]) in SECTIONS):
-        front.append(blocks[i])
-        i += 1
+    # everything before the first top-level heading: the Letter's byline, affiliations, note, bold summary and
+    # main text, or the article's introduction
+    i = next((k for k, b in enumerate(blocks) if top(b)), len(blocks))
+    front = blocks[:i]
     fr = [letter_runs(b["c"], front=True) for b in front if paras(b)]
     bold = [k for k, r in enumerate(fr) if r and all(x.get("b") or not x.get("t", "x").strip() for x in r)]
-    if not bold or bold[0] < 2:
-        sys.exit("the Letter's summary paragraph (all bold, after the byline and affiliations) was not found")
-    s = bold[0]
-    out = {"title": title, "byline": fr[0], "affiliations": fr[1], "note": [x for r in fr[2:s] for x in r],
-           "summary": letter_runs([x for x in front if paras(x)][s]["c"]),
-           "main": [{"type": "p", "runs": letter_runs(b["c"])} for b in [x for x in front if paras(x)][s + 1:]],
-           "sections": [], "figures": {}, "tables": {}}
+    if all(paras(b) for b in front) and bold and bold[0] >= 2:
+        s = bold[0]
+        out = {"title": title, "byline": fr[0], "affiliations": fr[1], "note": [x for r in fr[2:s] for x in r],
+               "summary": letter_runs([x for x in front if paras(x)][s]["c"]),
+               "main": [{"type": "p", "runs": letter_runs(b["c"])} for b in [x for x in front if paras(x)][s + 1:]],
+               "sections": [], "figures": {}, "tables": {}}
+    else:
+        out = {"title": title, "main": intro_blocks(front), "sections": [], "figures": {}, "tables": {}}
+    if subtitle:
+        out["subtitle"] = subtitle
+    if not out["main"]:
+        sys.exit("the draft has no text before its first top-level heading")
 
     sec, image, table_id = None, None, None
     for b in blocks[i:]:
         t = b["t"]
         if t == "Header":
             text = head_text(b)
-            if text in SECTIONS:
+            if top(b):
                 sec = {"id": slug(text), "title": text, "blocks": []}
                 out["sections"].append(sec)
             else:
