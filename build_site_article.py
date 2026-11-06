@@ -16,6 +16,9 @@ Since 6 Nov 2026 the Letter opens with Patrick's article instead of a byline and
 subtitle, then an introduction with indented quotations and lists, up to the first top-level
 heading. Each top-level heading starts a section of the page, and lower headings are its
 subsections. The Letter's own opening (byline, affiliations, note, bold summary) still reads.
+Later the same day every figure and table moved into the text, numbered in reading order ("Fig. 5 |",
+"Table 2 |"), and each stays where the draft puts it. The page's live drawings are matched to the
+figures by a phrase of each legend (DRAWINGS), so they follow the figures whatever their numbers.
 
     python3 -I build_site_article.py draft.docx     # or set ELNINO_DRAFT to the draft's path
 
@@ -165,8 +168,20 @@ def convert(path: Path) -> dict:
 # Top-level sections of the Letter, in Nature's order. A header with any other text is a subsection.
 SECTIONS = ("Methods", "References", "Acknowledgements", "Author contributions", "Competing interests",
             "Additional information", "Figures", "Extended Data", "Supplementary Information")
-LEGEND = re.compile(r"^(Extended Data Fig\.|Extended Data Table|Supplementary Table|Fig\.)\s*(\d+)\s*\|")
-KINDS = {"Fig.": "fig", "Extended Data Fig.": "ed", "Extended Data Table": "edt", "Supplementary Table": "st"}
+LEGEND = re.compile(r"^(Extended Data Fig\.|Extended Data Table|Supplementary Table|Fig\.|Table)\s*(\d+)\s*\|")
+KINDS = {"Fig.": "fig", "Extended Data Fig.": "ed", "Extended Data Table": "edt", "Supplementary Table": "st",
+         "Table": "tab"}
+# what the page draws for a figure, found by a phrase of its legend; a figure without one shows the draft's own
+# picture. Each phrase must be in exactly one legend, so a reworded legend stops the build instead of losing its
+# drawing. Tables get a role the same way, for the method notes that name them.
+DRAWINGS = (("main", "indexed to 2026 = 100"), ("timeline", "the contracts resolve on 1 October"),
+            ("temperature", "began during a strong El Niño"),
+            ("response", "response of world GDP per capita to a 1 °C shock"),
+            ("growth", "IMF’s average past error"), ("trendStarts", "depending on the first year of its average"),
+            ("afterElNino", "simulated years after 2027"), ("endYear", "last year of the growth period"),
+            ("distributions", "Simulated average growth"), ("known2027", "known 2027 value"),
+            ("sensitivity", "under the published design and"))
+ROLES = (("terms", "Proposed terms"), ("sensitivity", "sensitivity rows"))
 CITE = re.compile(r"^[\d\s,–-]+$")
 EQNO = re.compile(r"\\quad\s*\\quad\s*\((\d+)\)\s*[.,]?\s*$")
 
@@ -268,27 +283,93 @@ def letter_table(c) -> list[list[list[dict]]]:
     return rows
 
 
-def intro_blocks(front: list) -> list[dict]:
-    """The article-form introduction: paragraphs, indented quotations (marked indent) and lists, as the page
-    prints them."""
-    out = []
-    for b in front:
+class Blocks:
+    """The draft's blocks as the page prints them: paragraphs, indented quotations, lists, equations, and the figures
+    and tables, each where the draft puts it. A picture belongs to the legend after it, and a table to the legend
+    before it."""
+
+    def __init__(self, zf: zipfile.ZipFile, media_dir: Path, out: dict):
+        self.zf, self.media_dir, self.out = zf, media_dir, out
+        self.image, self.table_id = None, None
+
+    def add(self, b: dict, target: list, front: bool = False):
         t = b["t"]
-        if t in ("Para", "Plain"):
-            runs = letter_runs(b["c"])
-            if runs_text(runs).strip():
-                out.append({"type": "p", "runs": runs})
-        elif t == "BlockQuote":
-            out += [dict(x, indent=True) for x in intro_blocks(b["c"])]
+        if t == "Table":
+            rows = letter_table(b["c"])
+            if self.table_id:
+                self.out["tables"][self.table_id]["rows"] = rows
+                self.table_id = None
+            else:
+                target.append({"type": "table", "rows": rows})
         elif t in ("OrderedList", "BulletList"):
             items = b["c"][1] if t == "OrderedList" else b["c"]
-            out.append({"type": "list", "ordered": t == "OrderedList",
-                        "items": [letter_runs(x for blk in item for x in blk.get("c", []) if isinstance(x, dict))
-                                  for item in items]})
-        elif t == "Header":
+            target.append({"type": "list", "ordered": t == "OrderedList",
+                           "items": [letter_runs(x for blk in item for x in blk.get("c", []) if isinstance(x, dict))
+                                     for item in items]})
+        elif t == "BlockQuote":
+            inner: list = []
+            for x in b["c"]:
+                self.add(x, inner, front)
+            target += [dict(x, indent=True) if x["type"] == "p" else x for x in inner]
+        elif t == "Header" and front:
             text = runs_text(letter_runs(b["c"][2])).strip()
-            out.append({"type": "h3", "text": text, "id": slug(text)})
-    return out
+            target.append({"type": "h3", "text": text, "id": slug(text)})
+        elif t in ("Para", "Plain") and not self.picture(b):
+            self.para(letter_runs(b["c"]), target)
+
+    def picture(self, b: dict) -> bool:
+        imgs = [x for x in b["c"] if x.get("t") == "Image"]
+        if not imgs:
+            return False
+        target = imgs[0]["c"][2][0]
+        names = self.zf.namelist()
+        data = self.zf.read("word/" + target) if "word/" + target in names else self.zf.read(target)
+        name = hashlib.sha256(data).hexdigest()[:12] + Path(target).suffix
+        self.media_dir.mkdir(parents=True, exist_ok=True)
+        (self.media_dir / name).write_bytes(data)
+        w, h = png_size(data)
+        self.image = {"file": f"{self.media_dir.name}/{name}", "w": w, "h": h}
+        return True
+
+    def para(self, runs: list[dict], target: list):
+        text = runs_text(runs).strip()
+        if not text and not any("math" in r for r in runs):
+            return
+        m = LEGEND.match(text)
+        if m:
+            kind = KINDS[m.group(1)]
+            fid, label = f"{kind}{m.group(2)}", f"{m.group(1)} {m.group(2)}"
+            if kind in ("fig", "ed"):
+                self.out["figures"][fid] = {"label": label, "legend": runs, "image": self.image}
+                self.image = None
+                target.append({"type": "figure", "id": fid})
+            else:
+                self.out["tables"][fid] = {"label": label, "legend": runs, "rows": []}
+                self.table_id = fid
+                target.append({"type": "table", "id": fid})
+            return
+        maths = [r for r in runs if "math" in r]
+        if len(maths) == 1 and not text:
+            tex = maths[0]["math"]
+            n = EQNO.search(tex)
+            target.append({"type": "eq", "tex": EQNO.sub("", tex).rstrip(" ,"), "n": n.group(1) if n else None})
+            return
+        target.append({"type": "p", "runs": runs})
+
+
+def match_drawings(out: dict):
+    """Give each figure the page's drawing for it, and each table its role, by the phrases in DRAWINGS and ROLES.
+    A draft that still has Extended Data is older than the phrases, and the page goes by its figures' ids."""
+    if any(k.startswith("ed") for k in out["figures"]):
+        return
+    for items, phrases, field in ((out["figures"], DRAWINGS, "draw"), (out["tables"], ROLES, "role")):
+        for key, phrase in phrases:
+            hits = [k for k, f in items.items() if phrase in runs_text(f["legend"])]
+            if len(hits) != 1:
+                sys.exit(f"{field} {key!r}: {len(hits)} legends have {phrase!r}")
+            items[hits[0]][field] = key
+        for f in items.values():
+            f.setdefault(field, None)
 
 
 def convert_letter(path: Path, media_dir: Path) -> dict:
@@ -313,17 +394,20 @@ def convert_letter(path: Path, media_dir: Path) -> dict:
                "summary": letter_runs([x for x in front if paras(x)][s]["c"]),
                "main": [{"type": "p", "runs": letter_runs(b["c"])} for b in [x for x in front if paras(x)][s + 1:]],
                "sections": [], "figures": {}, "tables": {}}
+        read = Blocks(zf, media_dir, out)
     else:
-        out = {"title": title, "main": intro_blocks(front), "sections": [], "figures": {}, "tables": {}}
+        out = {"title": title, "main": [], "sections": [], "figures": {}, "tables": {}}
+        read = Blocks(zf, media_dir, out)
+        for b in front:
+            read.add(b, out["main"], front=True)
     if subtitle:
         out["subtitle"] = subtitle
     if not out["main"]:
         sys.exit("the draft has no text before its first top-level heading")
 
-    sec, image, table_id = None, None, None
+    sec = None
     for b in blocks[i:]:
-        t = b["t"]
-        if t == "Header":
+        if b["t"] == "Header":
             text = head_text(b)
             if top(b):
                 sec = {"id": slug(text), "title": text, "blocks": []}
@@ -332,64 +416,13 @@ def convert_letter(path: Path, media_dir: Path) -> dict:
                 m = re.match(r"Supplementary Section (\d+)", text)
                 sec["blocks"].append({"type": "h3", "text": text, "id": f"ss{m.group(1)}" if m else slug(text)})
             continue
-        if t == "Table":
-            rows = letter_table(b["c"])
-            if table_id:
-                out["tables"][table_id]["rows"] = rows
-                table_id = None
-            else:
-                sec["blocks"].append({"type": "table", "rows": rows})
-            continue
-        if t == "OrderedList":
+        if b["t"] == "OrderedList" and sec["title"] == "References":
             items = [letter_runs(x for blk in item for x in blk.get("c", []) if isinstance(x, dict))
                      for item in b["c"][1]]
-            if sec["title"] == "References":
-                sec["refs"] = [{"n": b["c"][0][0] + k, "runs": r} for k, r in enumerate(items)]
-            else:
-                sec["blocks"].append({"type": "list", "ordered": True, "items": items})
+            sec["refs"] = [{"n": b["c"][0][0] + k, "runs": r} for k, r in enumerate(items)]
             continue
-        if t == "BulletList":
-            sec["blocks"].append({"type": "list", "ordered": False,
-                                  "items": [letter_runs(x for blk in it for x in blk.get("c", []) if isinstance(x, dict))
-                                            for it in b["c"]]})
-            continue
-        if not paras(b):
-            continue
-        imgs = [x for x in b["c"] if x.get("t") == "Image"]
-        if imgs:
-            target = imgs[0]["c"][2][0]
-            data = zf.read("word/" + target) if "word/" + target in zf.namelist() else zf.read(target)
-            name = hashlib.sha256(data).hexdigest()[:12] + Path(target).suffix
-            media_dir.mkdir(parents=True, exist_ok=True)
-            (media_dir / name).write_bytes(data)
-            w, h = png_size(data)
-            image = {"file": f"{media_dir.name}/{name}", "w": w, "h": h}
-            continue
-        runs = letter_runs(b["c"])
-        text = runs_text(runs).strip()
-        if not text and not any("math" in r for r in runs):
-            continue
-        m = LEGEND.match(text)
-        if m:
-            kind = KINDS[m.group(1)]
-            fid = f"{kind}{m.group(2)}"
-            label = f"{m.group(1)} {m.group(2)}"
-            if kind in ("fig", "ed"):
-                out["figures"][fid] = {"label": label, "legend": runs, "image": image}
-                image = None
-                sec["blocks"].append({"type": "figure", "id": fid})
-            else:
-                out["tables"][fid] = {"label": label, "legend": runs, "rows": []}
-                table_id = fid
-                sec["blocks"].append({"type": "table", "id": fid})
-            continue
-        maths = [r for r in runs if "math" in r]
-        if len(maths) == 1 and not text:
-            tex = maths[0]["math"]
-            n = EQNO.search(tex)
-            sec["blocks"].append({"type": "eq", "tex": EQNO.sub("", tex).rstrip(" ,"), "n": n.group(1) if n else None})
-            continue
-        sec["blocks"].append({"type": "p", "runs": runs})
+        read.add(b, sec["blocks"])
+    match_drawings(out)
     return out
 
 
@@ -401,7 +434,8 @@ def main():
     source = {"file": src.name, "modified": mtime, "read": datetime.now(timezone.utc).isoformat(timespec="seconds")}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     body = etree.fromstring(zipfile.ZipFile(src).read("word/document.xml"))
-    if any(t.text and t.text.startswith("Extended Data Fig.") for t in body.iter(q("t"))):
+    # the Letter has figure legends ("Fig. 1 |"); the cover article has captions ("Figure 1.")
+    if any(LEGEND.match("".join(t.text or "" for t in p.iter(q("t")))) for p in body.iter(q("p"))):
         media = OUT.parent / "letter"
         art = {"schema": 2, "source": source} | convert_letter(src, media)
         keep = {f["image"]["file"].split("/")[-1] for f in art["figures"].values() if f.get("image")}

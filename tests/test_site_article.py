@@ -4,7 +4,8 @@ The draft is Patrick's file and stays out of the repository, so these run only w
 names it. Every figure and table must keep its legend, every citation must point at a reference,
 every equation must come through whole, and every figure the page draws must be in the draft.
 Since 6 Nov 2026 the draft opens with the article's introduction, numbered in reading order, and
-the page puts the contract card after its contract question.
+the page puts the contract card after its contract question. Later that day every figure and table
+moved into the text, numbered in the order it appears, and the links in the text went.
 """
 import os
 import re
@@ -96,5 +97,34 @@ def test_equations_come_through_whole(L):
 
 def test_page_draws_only_figures_the_draft_has(L):
     js = (SA.ROOT / "site_tab" / "js" / "climate-gdp.js").read_text()
-    drawn = set(re.findall(r"^\s+(fig\d+|ed\d+): \[\[", js, re.M))
-    assert drawn and drawn <= set(L["figures"])
+    start = js.index("const LDRAW = {")
+    drawings = set(re.findall(r"^\s+(\w+): \[\[", js[start:js.index("};", start)], re.M))
+    used = {f["draw"] for f in L["figures"].values() if f.get("draw")}
+    assert used and used <= drawings | {"main"}, "a figure names a drawing the page does not have"
+
+
+def blocks(L):
+    return L["main"] + [b for s in L["sections"] for b in s["blocks"]]
+
+
+def test_figures_and_tables_are_numbered_in_the_order_they_appear(L):
+    seen = [b["id"] for b in blocks(L) if b["type"] in ("figure", "table") and b.get("id")]
+    figs, tabs = [k for k in seen if k.startswith("fig")], [k for k in seen if k.startswith("tab")]
+    assert figs == [f"fig{n}" for n in range(1, len(figs) + 1)] and len(figs) == len(L["figures"])
+    assert tabs == [f"tab{n}" for n in range(1, len(tabs) + 1)]
+
+
+def test_the_text_cites_every_figure_in_order(L):
+    first = []
+    for b in blocks(L):
+        for runs in ([b["runs"]] if b["type"] == "p" else b["items"] if b["type"] == "list" else []):
+            for m in re.finditer(r"\bFigs?\. (\d+)", SA.runs_text(runs)):
+                if int(m.group(1)) not in first:
+                    first.append(int(m.group(1)))
+    assert first == list(range(1, len(L["figures"]) + 1)), first
+
+
+def test_only_the_citations_point_to_sources(L):
+    for b in blocks(L):
+        for runs in block_runs(b, L):
+            assert not any(r.get("href") for r in runs), SA.runs_text(runs)[:60]
