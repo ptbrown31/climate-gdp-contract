@@ -65,6 +65,22 @@ def test_imf_baseline_units_and_extension():
     assert b.window_mean(2027, 2030) == pytest.approx(b.growth.loc[2028:2030].mean())
 
 
+def test_imf_population_break_uses_the_countries():
+    """The October 2026 world total drops Afghanistan in 2026; that year's population growth is
+    the countries' own, and every other year keeps the world total's (so the WDI gap is unchanged)."""
+    wdi = pd.Series(np.exp(np.linspace(9.0, 10.0, 41)), index=range(1985, 2026))
+    b = IB.load_baseline(ROOT / "data/raw/imf", wdi, 2037, "test vintage")
+    assert list(b.population_repairs) == [2026]
+    r = b.population_repairs[2026]
+    assert r["world_total_pp"] == pytest.approx(0.28, abs=0.01) and r["countries_pp"] == pytest.approx(0.82, abs=0.01)
+    g = json.loads((ROOT / "data/raw/imf/NGDP_RPCH.json").read_text())["values"]["NGDP_RPCH"]["WEOWORLD"]
+    lp = json.loads((ROOT / "data/raw/imf/LP.json").read_text())["values"]["LP"]["WEOWORLD"]
+    assert b.imf_growth.loc[2026] == pytest.approx(100 * np.log1p(g["2026"] / 100) - r["countries_pp"])
+    for t in (1992, 2011, 2025, 2027, 2031):
+        assert b.imf_growth.loc[t] == pytest.approx(100 * np.log1p(g[str(t)] / 100)
+                                                    - 100 * np.log(lp[str(t)] / lp[str(t - 1)]))
+
+
 def test_error_paths_keep_mean_and_variance():
     rng = np.random.default_rng(5)
     paths = rng.normal(0.2, 1.0, size=(40, 6)) + rng.normal(0, 0.8, size=(40, 1))   # persistent component

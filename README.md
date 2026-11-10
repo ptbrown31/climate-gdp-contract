@@ -54,6 +54,7 @@ Download each IMF file from its source in the table into the folder shown.
 | `WEOhistorical.xlsx` | `data/raw/imf_hist/` | [IMF Historical WEO Forecasts Database](https://data.imf.org/-/media/iData/External-Storage/Documents/D2AC2BB4C12C4A8CB2B6DAF1159263EB/en/WEOhistorical.xlsx) | `6b15feaec5d77201a496b44bce59138586e3c9fd32531bcdd60d273879691b84` |
 | `NGDP_RPCH.json` | `data/raw/imf/` | [IMF DataMapper API, NGDP_RPCH](https://www.imf.org/external/datamapper/api/v1/NGDP_RPCH) (October 2026 WEO) | `5200170b0f19f025e4e0a4e7685d8d5182e11068bff6ef4c92aea400739f0148` |
 | `LP.json` | `data/raw/imf/` | [IMF DataMapper API, LP](https://www.imf.org/external/datamapper/api/v1/LP) (October 2026 WEO) | `9ddc36efbd0d0e8166afa9d00e99526425b3c484daf83f5c230af38213410dd0` |
+| `countries.json` | `data/raw/imf/` | [IMF DataMapper API, country list](https://www.imf.org/external/datamapper/api/v1/countries) (saved 17 October 2026 with the files above) | `8e0365234e90b2a0e94c36e9d909cee9c5658c87270c400d7b59971691511307` |
 
 The public-domain and CC BY series (NOAA, NASA GISTEMP, the Oceanic Niño indices, World Bank WDI)
 are in `data/raw/` as the published run downloaded them, each with its `vintage.json` (address,

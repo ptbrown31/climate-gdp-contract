@@ -4,6 +4,10 @@ Baseline: per-capita growth implied by the IMF's world real GDP growth and world
 projections (one WEO vintage, frozen), plus the mean gap between WDI per-capita growth and
 the IMF-implied figure over 1991-2025, so it is in the units of the settlement series
 (WDI NY.GDP.PCAP.PP.KD). Past the last IMF projection year the last projected rate is held.
+World population growth is the IMF's world total's, except in a projection year where the total
+breaks: there it is summed over the countries with figures in both years (``countries.json``,
+the DataMapper's country list). The October 2026 total drops Afghanistan in 2026, the first year
+without a figure for it, so its growth falls to 0.28% against 0.82% for the countries.
 
 Spread: the IMF's own historical forecast errors (realized minus forecast world real GDP
 growth, by years ahead of the vintage), resampled as whole vintage error paths so that
@@ -15,7 +19,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
@@ -25,6 +29,7 @@ from . import baseline as B
 from . import xlsx as XL
 
 GAP_YEARS = (1991, 2025)
+BREAK_PP = 0.1      # a projection year whose world population growth is this far from the countries' is a break
 
 
 @dataclass(frozen=True)
@@ -34,6 +39,7 @@ class Baseline:
     imf_growth: pd.Series      # IMF-implied per-capita growth before the WDI gap
     projected_through: int
     wdi_gap: float
+    population_repairs: dict = field(default_factory=dict)    # year -> the world total's and the countries' growth
 
     def window_mean(self, base: int, end: int) -> float:
         return float(self.growth.loc[base + 1:end].mean())
@@ -47,11 +53,30 @@ def _datamapper_series(path: Path, indicator: str, area: str = "WEOWORLD") -> pd
     return pd.Series({int(k): float(v) for k, v in d.items()}).sort_index()
 
 
+def population_growth(imf_dir: Path, after: int) -> tuple[pd.Series, dict]:
+    """World population growth (100 x log) from the IMF's world total, with each projection year
+    (after ``after``) that breaks replaced by growth summed over the countries with figures in
+    both years. Breaks in earlier years, when countries joined the IMF's data, stay: the WDI gap
+    is fitted on them, and the total tracks WDI growth more closely there than the countries' sum."""
+    lp = json.loads((imf_dir / "LP.json").read_text())["values"]["LP"]
+    pop = pd.Series({int(k): float(v) for k, v in lp["WEOWORLD"].items()}).sort_index()
+    growth = 100 * np.log(pop / pop.shift(1))
+    countries = [lp[c] for c in json.loads((imf_dir / "countries.json").read_text())["countries"] if c in lp]
+    repairs = {}
+    for t in growth.index[growth.index > after]:
+        both = [c for c in countries if str(t - 1) in c and str(t) in c]
+        own = float(100 * np.log(sum(c[str(t)] for c in both) / sum(c[str(t - 1)] for c in both)))
+        if abs(own - growth[t]) > BREAK_PP:
+            repairs[int(t)] = {"world_total_pp": float(growth[t]), "countries_pp": own, "n_countries": len(both)}
+            growth[t] = own
+    return growth, repairs
+
+
 def load_baseline(imf_dir: Path, wdi: pd.Series, last_year: int, vintage: str) -> Baseline:
     g = _datamapper_series(imf_dir / "NGDP_RPCH.json", "NGDP_RPCH")
-    pop = _datamapper_series(imf_dir / "LP.json", "LP")
-    imf_pc = (100 * np.log1p(g / 100) - 100 * np.log(pop / pop.shift(1))).dropna()
     wdi_g = B.log_growth(wdi)
+    pop_g, repairs = population_growth(imf_dir, int(wdi_g.index.max()))
+    imf_pc = (100 * np.log1p(g / 100) - pop_g).dropna()
     common = imf_pc.index.intersection(wdi_g.index)
     common = [t for t in common if GAP_YEARS[0] <= t <= GAP_YEARS[1]]
     gap = float((wdi_g.loc[common] - imf_pc.loc[common]).mean())
@@ -59,7 +84,7 @@ def load_baseline(imf_dir: Path, wdi: pd.Series, last_year: int, vintage: str) -
     grown = imf_pc + gap
     ext = pd.Series({t: grown.loc[through] for t in range(through + 1, last_year + 1)})
     full = pd.concat([grown, ext]).sort_index()
-    return Baseline(vintage, full, imf_pc, through, gap)
+    return Baseline(vintage, full, imf_pc, through, gap, repairs)
 
 
 @dataclass(frozen=True)

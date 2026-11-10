@@ -181,8 +181,8 @@ Each row changes one choice at a time and has its own cutoff.
 | Frozen 1991–2019 drift baseline (handoff) | −6.8 | 1.27 | 0.64 |
 | Frozen 2000–19 drift + 0.5 pp drift uncertainty | −6.8 | 1.64 | 0.57 |
 | Growth 2027→2031 (draft until 30 Oct) | −4.6 | 0.96 | 0.60 |
-| Mean level 2029–33 vs 2025 (earlier draft) | −5.3 | 1.36 | 0.59 |
-| Mean level 2031–35 vs 2025 (handoff) | −5.7 | 1.36 | 0.51 |
+| Mean level 2029–33 vs 2025 (earlier draft) | −5.3 | 1.30 | 0.59 |
+| Mean level 2031–35 vs 2025 (handoff) | −5.7 | 1.30 | 0.51 |
 
 - If the truth were only the 2023–27 or only the 2026–27 shocks, the unconditional contract would resolve No 77% / 51% of the time.
 - The predicted size moves most with the IRF family and with how long the warmth persists. What the cutoff means in growth terms moves most with the baseline.
@@ -190,7 +190,7 @@ Each row changes one choice at a time and has its own cutoff.
 ## 11. Interpretation of a result
 
 - **A result tests the paper's prediction for one episode.** Growth at or below the strike is evidence in the direction of the paper's linear world-GDP response, and growth above it is evidence against an effect of that size. Neither outcome identifies causation.
-- **The test is relative.** Under the paper, median world GDP per capita still rises, to ≈$23.1k in 2031 against ≈$24.5k with no effect (the 2025 level is $21.9k).
+- **The test is relative.** Under the paper, median world GDP per capita still rises, to ≈$22.9k in 2031 against ≈$24.4k with no effect (the 2025 level is $21.9k).
 - **The test covers the whole warm sequence.** Both the prediction and the outcome carry the 2023–25 shocks.
 - **The test relies on extrapolation.** The 2024 shock (+0.35 °C) is above the largest in the authors' sample (+0.30 °C in 2016).
 - **Error rates depend on the baseline being right.** The spread assumes the IMF's average miss continues. If its forecasts had become unbiased, the central contract would resolve No only 51% of the time when the paper is right (instead of 82%). If its misses grew, No would come more often with no effect.

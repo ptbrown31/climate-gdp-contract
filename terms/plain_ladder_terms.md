@@ -1,6 +1,6 @@
 # World GDP per Capita Growth (WGDPC): Contract Terms and Conditions
 
-*Draft for comment, 2026-11-05. Proposed by Patrick T. Brown for listing on ForecastEx, in the layout of ForecastEx's published contract terms; ForecastEx sets the final wording, product codes, listings and thresholds. The end year, the thresholds and the chances are indicative and refresh monthly with the analysis until the terms freeze in mid-January 2027.*
+*Draft for comment, 2026-11-10. Proposed by Patrick T. Brown for listing on ForecastEx, in the layout of ForecastEx's published contract terms; ForecastEx sets the final wording, product codes, listings and thresholds. The end year, the thresholds and the chances are indicative and refresh monthly with the analysis until the terms freeze in mid-January 2027.*
 
 ## Proposed terms
 
@@ -82,4 +82,4 @@ With no temperature effect, average growth from 2026 to 2031 has a median of 1.6
 
 ### Data and code
 
-Every number here comes from the analysis's latest run (outputs/results.json, 2026-11-05), and build_docs.py rewrites these terms from it at each monthly refresh until the freeze. The code, the published run and its data are at https://github.com/ptbrown31/climate-gdp-contract. The contract's page, https://weather.weatherclimatehumansystems.org/climate-gdp.html, re-runs the model in the browser with its main assumptions on controls. CONTRACT_TERMS.md sets out the full design, the reason for each choice and the objections we expect.
+Every number here comes from the analysis's latest run (outputs/results.json, 2026-11-10), and build_docs.py rewrites these terms from it at each monthly refresh until the freeze. The code, the published run and its data are at https://github.com/ptbrown31/climate-gdp-contract. The contract's page, https://weather.weatherclimatehumansystems.org/climate-gdp.html, re-runs the model in the browser with its main assumptions on controls. CONTRACT_TERMS.md sets out the full design, the reason for each choice and the objections we expect.

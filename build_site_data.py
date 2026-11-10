@@ -289,7 +289,7 @@ def main():
             "imfMissIfCentred": res["imf_miss_if_centred"],
             # the Letter's figures at the published settings: GDP levels and temperatures (Fig. 1a), the
             # sensitivity rows (Fig. 4), the trend baseline's start year and a known 2027 value
-            "levels": {str(t): {v: [round(float(bands.loc[t, f"{k}_level_q{q:02d}"]), 1) for q in (10, 50, 90)]
+            "levels": {str(t): {v: [round(float(bands.loc[t, f"{k}_level_q{q:02d}"]), 3) for q in (10, 50, 90)]
                                 for v, k in (("h0", "H0"), ("h1", "H1"))} for t in YEARS},
             "futureTemperatures": res["future_temperatures"]["levels"],
             "sensitivity": res["sensitivity_table"],

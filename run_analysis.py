@@ -319,6 +319,7 @@ def main(refresh: bool = False):
                                       imf.imf_growth.reindex(g.loc[A.IB.GAP_YEARS[0]:A.IB.GAP_YEARS[1]].index))[0, 1]),
         "growth_pp": {int(t): float(v) for t, v in imf.growth.loc[2026:2037].items()},
         "imf_implied_pp": {int(t): float(v) for t, v in imf.imf_growth.loc[2026:imf.projected_through].items()},
+        "population_repairs": imf.population_repairs,
         "window_mean_pp": imf.window_mean(D.base_year, D.window[1]),
         "errors": {"source": em.source, "n_forecasts": int(em.paths.shape[0]), "max_lead": em.max_lead,
                    "mean_by_lead": em.paths.mean(axis=0), "sd_by_lead": em.paths.std(axis=0, ddof=1),

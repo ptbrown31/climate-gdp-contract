@@ -1,6 +1,6 @@
 # Draft contract specification for world GDP per capita after the 2023–27 global temperature shocks
 
-*This is a **draft for comment**, refreshed 2026-11-05. The contracts were redesigned on 30 Oct 2026, and on 4 Nov 2026 their conditioning event moved to ForecastEx's Global Temperature contract (see the changes at the end).*
+*This is a **draft for comment**, refreshed 2026-11-10. The contracts were redesigned on 30 Oct 2026, and on 4 Nov 2026 their conditioning event moved to ForecastEx's Global Temperature contract (see the changes at the end).*
 
 - Three **conditional contracts**, one for each range of NOAA's 2027 global temperature, are proposed to list right after NOAA publishes its **2026 annual value (expected mid-January 2027)**.
 - The **plain ladder** asks the same question with no temperature condition and lists at the same time. Its terms are in `terms/plain_ladder_terms.md`.

@@ -1,6 +1,6 @@
 # World GDP per Capita Growth 2026–2031, above 1.1% (WGDPC, flagship): Contract Terms and Conditions
 
-*Draft for comment, 2026-11-05. Proposed by Patrick T. Brown for listing on ForecastEx, in the layout of ForecastEx's published contract terms; ForecastEx sets the final wording, product codes, listings and thresholds. The end year, the threshold and the chances are indicative and refresh monthly with the analysis until the terms freeze in mid-January 2027.*
+*Draft for comment, 2026-11-10. Proposed by Patrick T. Brown for listing on ForecastEx, in the layout of ForecastEx's published contract terms; ForecastEx sets the final wording, product codes, listings and thresholds. The end year, the threshold and the chances are indicative and refresh monthly with the analysis until the terms freeze in mid-January 2027.*
 
 *This is the 1.1% contract of the plain ladder (WGDPC), set out on its own with every blank filled in. Its terms are the ladder's, written from the same text.*
 
@@ -73,4 +73,4 @@ Whichever range NOAA's 2027 value falls in, that range's 1.1% conditional positi
 
 ### Data and code
 
-Every number here comes from the analysis's latest run (outputs/results.json, 2026-11-05), and build_docs.py rewrites these terms from it at each monthly refresh until the freeze. The code, the published run and its data are at https://github.com/ptbrown31/climate-gdp-contract. The contract's page, https://weather.weatherclimatehumansystems.org/climate-gdp.html, re-runs the model in the browser with its main assumptions on controls. CONTRACT_TERMS.md sets out the full design, the reason for each choice and the objections we expect.
+Every number here comes from the analysis's latest run (outputs/results.json, 2026-11-10), and build_docs.py rewrites these terms from it at each monthly refresh until the freeze. The code, the published run and its data are at https://github.com/ptbrown31/climate-gdp-contract. The contract's page, https://weather.weatherclimatehumansystems.org/climate-gdp.html, re-runs the model in the browser with its main assumptions on controls. CONTRACT_TERMS.md sets out the full design, the reason for each choice and the objections we expect.
